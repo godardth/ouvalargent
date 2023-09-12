@@ -1,0 +1,42 @@
+{
+    "organizations": [
+        {
+            "organization": "URSSAAF",
+            "reference": "",
+            "updated": "2023-09-12T20:32:00Z",
+            "variables": {
+                "SMIC": 20814.73,
+                "PlafondA": 43992,
+                "PlafondB": 175968
+            },
+            "deductions": [
+                { "category": "Employeur", "title": "Maladie", "base": "total", "rate": 13, "deduced": false },
+                { "category": "Employeur", "title": "Vieillesse Plafonnee (E)", "base": "PlafondA", "rate": 8.55, "deduced": false },
+                { "category": "Employeur", "title": "Vieillesse Deplafonnee (E)", "base": "total", "rate": 1.90, "deduced": false },
+                { "category": "Salarie", "title": "Vieillesse Plafonnee(S)", "base": "PlafondA", "rate": 6.90, "deduced": true },
+                { "category": "Salarie", "title": "Vieillesse Deplafonnee (S)", "base": "total", "rate": 0.40, "deduced": true },
+                { "category": "Employeur", "title": "Allocations Familiales", "base": "total", "rate": 5.25, "deduced": false },
+                { "category": "Employeur", "title": "Accident du travail", "base": "total", "rate": 0, "deduced": false },
+                { "category": "Employeur", "title": "FNAL", "base": "total", "rate": 0.50, "deduced": false },
+                { "category": "Employeur", "title": "Contribution de solidarite pour l'autonomie", "base": "total", "rate": 0.30, "deduced": false },
+                { "category": "Employeur", "title": "Versement de transport", "base": "total", "rate": 0, "deduced": false },
+                { "category": "Employeur", "title": "Forfait Social", "base": "employeur", "rate": 30, "deduced": false },
+                { "category": "Employeur", "title": "Contribution au dialogue social", "base": "total", "rate": 0.016, "deduced": false },
+                { "category": "Employeur", "title": "Assurance Chomage", "base": "total", "rate": 4.05, "deduced": false },
+                { "category": "Employeur", "title": "AGS (FNGS)", "base": "total", "rate": 0.15, "deduced": false },
+                { "category": "Salarie", "title": "CSG", "base": "total", "rate": 9.2, "deduced": true },
+                { "category": "Salarie", "title": "CRDS", "base": "total", "rate": 0.5, "deduced": true},
+                { "category": "Salarie", "title": "Impots sur le revenu", "base": "total", "rate": 0.5, "deduced": true}
+            ]
+        },
+        {
+            "organization": "Ministere des Finances",
+            "reference": "",
+            "updated": "2023-09-12T20:32:00Z",
+            "variables": {},
+            "deductions": [
+                { "category": "Impots sur le revenu", "title": "Impot sur le revenu", "base": "total", "rate": 17.5, "deduced": false }
+            ]
+        }
+    ]
+}

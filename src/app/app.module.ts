@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { GoogleChartsModule } from 'angular-google-charts';
 
@@ -14,6 +15,7 @@ import { SankeyComponent } from './sankey/sankey.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
     GoogleChartsModule
   ],
   providers: [],
