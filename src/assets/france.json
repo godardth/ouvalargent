@@ -1,0 +1,84 @@
+{
+    "inputs" : [
+        { "label": "Salaire Annuel Brut", "variable": "income", "type": "number", "default": 80000 }
+    ],
+    "groups": [
+        {
+            "constants": {
+                "SMIC": 20814.73,
+                "PlafondA": 43992,
+                "PlafondB": 175968
+            },
+            "direction": "forward",
+            "title": "Cout", 
+            "color": "#0000ff",
+            "breakdown": [
+                { "ref": "mal", "title": "Maladie", "formula": "v['income'] * 0.13", "color": "#ff0000" },
+                { "ref": "retE", "title": "Vieillesse (E)", "formula": "Math.min(v['income'], v['PlafondA']) * 0.0855 + v['income'] * 0.019", "color": "#ff0000" },
+                { "ref": "retS", "title": "Vieillesse (S)", "formula": "Math.min(v['income'], c['PlafondA']) * 0.069 + v['income'] * 0.004", "color": "#ff0000" },
+                { "ref": "alloc", "title": "Allocations Familiales", "formula": "v['income'] * 0.0525", "color": "#ff0000" },
+                { "ref": "accTra", "title": "Accident du travail", "formula": "v['income'] * 0", "color": "#ff0000" },
+                { "ref": "fnal", "title": "FNAL", "formula": "v['income'] * 0.005", "color": "#ff0000" },
+                { "ref": "cspa", "title": "Contribution de solidarite pour l'autonomie", "formula": "v['income'] * 0.003", "color": "#ff0000" },
+                { "ref": "trans", "title": "Versement de transport", "formula": "v['income'] * 0", "color": "#ff0000" },
+                { "ref": "cds", "title": "Contribution au dialogue social", "formula": "v['income'] * 0.00016", "color": "#ff0000" },
+                { "ref": "chom", "title": "Assurance Chomage", "formula": "v['income'] * 0.0405", "color": "#ff0000" },
+                { "ref": "ags", "title": "AGS (FNGS)", "formula": "v['income'] * 0.0015", "color": "#ff0000" },
+                { "ref": "csg", "title": "CSG", "formula": "v['income'] * 0.092", "color": "#ff0000" },
+                { "ref": "crds", "title": "CRDS", "formula": "v['income'] * 0.005", "color": "#ff0000" },
+                { "ref": "forSoc", "title": "Forfait Social", "formula": "(r['mal']+r['retE']+r['alloc']+r['accTra']+r['fnal']+r['cspa']+r['trans']+r['cds']) * 0.3", "color": "#ff0000" },
+                { "ref": "netN", "title": "Net (Non Imposable)", "formula": "0", "color": "#F00" },
+                { "ref": "netI", "title": "Net (Imposable)", "formula": "v['income'] - (r['retS']+r['csg']+r['crds'])", "color": "#ffc249" }
+            ]
+        },
+        {
+            "constants": {},
+            "direction": "backward",
+            "title": "Cotisations Patronales", 
+            "ref": "cpat", 
+            "breakdown": [
+                { "title": "Maladie", "formula": "r['mal']" },
+                { "title": "Allocations Familiales", "formula": "r['alloc']" },
+                { "title": "Vieillesse (E)", "formula": "r['retE']" },
+                { "title": "Assurance Chomage", "formula": "r['chom']" },
+                { "title": "Accident du travail", "formula": "r['accTra']" },
+                { "title": "FNAL", "formula": "r['fnal']" },
+                { "title": "Contribution de solidarite pour l'autonomie", "formula": "r['cspa']" },
+                { "title": "Contribution au dialogue social", "formula": "r['cds']" },
+                { "title": "AGS (FNGS)", "formula": "r['ags']" }
+            ]
+        },
+        {
+            "constants": {},
+            "direction": "backward",
+            "title": "Cotisations Salariales", 
+            "ref": "csal",
+            "breakdown": [
+                { "title": "CSG", "formula": "r['csg']" },
+                { "title": "CRDS", "formula": "r['crds']" },
+                { "title": "Vieillesse (S)", "formula": "r['retS']" }
+            ]
+        },
+        {
+            "constants": {
+                "TaxRate": 17.5
+            },
+            "direction": "forward",
+            "title": "Net (Imposable)", 
+            "breakdown": [
+                { "ref": "ir", "title": "Impots sur le revenu", "formula": "r['netI'] * c['TaxRate'] / 100" },
+                { "title": "Net apres impots", "formula": "r['netI'] * (100-c['TaxRate']) / 100" }
+            ]
+        },
+        {
+            "constants": {},
+            "direction": "backward",
+            "title": "Gouvernement", 
+            "breakdown": [
+                { "title": "Cotisations Salariales", "formula": "r['csal']" },
+                { "title": "Cotisations Patronales", "formula": "r['cpat']" },
+                { "title": "Impots sur le revenu", "formula": "r['ir']" } 
+            ]
+        }
+    ]
+}

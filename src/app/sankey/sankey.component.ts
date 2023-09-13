@@ -1,6 +1,6 @@
 import { ChartType, ScriptLoaderService, getPackageForChart } from 'angular-google-charts';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import SampleJson from '../../assets/median.json';
+import SampleJson from '../../assets/france.json';
 
 @Component({
   selector: 'app-sankey',
@@ -20,7 +20,7 @@ export class SankeyComponent implements OnInit {
     'sankey': {
       'node': { 
         'width': 15,
-        'nodePadding': 40,
+        'nodePadding': 30,
         'colors': ['#000'],
         'label': { 
           'fontName': 'Arial',
@@ -38,17 +38,6 @@ export class SankeyComponent implements OnInit {
       },
     }
   };
-  // data = [
-  //   // [ 'Value', 'Cotisation Patronales', 9581 ],
-  //   // [ 'Value', 'Cotisation Salariales', 6689 ],
-  //   // [ 'Value', 'Impot sur le revenu', 1339 ],
-  //   [ 'Value', 'Net', 22805 ],
-  //   [ 'Net', 'Epargne', 2280],
-  //   [ 'Net', 'Depenses', 20525],
-  //   [ 'Cotisation Patronales', 'Taxes', 9581 ],
-  //   [ 'Cotisation Salariales', 'Taxes', 6689 ],
-  //   [ 'Impot sur le revenu', 'Taxes', 1339 ],
-  // ];
   colorMap: any = {
     'Value': '#2196f3',
     'Net': '#8feeaa',
@@ -60,90 +49,65 @@ export class SankeyComponent implements OnInit {
     'Epargne': '#2196f3'
   };
 
-  income: number = 80000;
-  
+  // income: number = 80000;
+  inputs: Array<any> = [];
+  values: any = {};
+
   constructor(private loaderService: ScriptLoaderService) {}
 
   ngOnInit() {
+    this.loaderService.loadChartPackages(this.chartPackage).subscribe(() => {
+      this.redrawChart();
+    });
+  }
+
+  redrawChart() {
 
     // Helpers
     let unique = (arr: Array<any>) => arr.filter((o,i)=>arr.indexOf(o)===i);
 
     // Prepare Data
-    let net = this.income;
+    let ref: any = {};
     let rows: Array<any> = [];
-    
-    SampleJson.organizations.forEach(organization => {
-      let variables = organization.variables;
-      let categories = unique(organization.deductions.map(o=>o.category));
-      categories.forEach(category => {
-        
-        // Tax calculation based on external bases
-        let category_total = 0;
-        organization.deductions.filter(o => o.category==category && o.base!=category).forEach(deduction => {
-          let base = deduction.base == 'total' ? this.income : variables[deduction.base as keyof typeof variables];
-          let value = Math.round(base! * deduction.rate / 100);
-          if (value > 0) {
-            rows.push(['Cout Employeur', deduction.title, value]);
-            rows.push([deduction.title, category, value]);
-          }
-          category_total += value;
-          if (deduction.deduced) net -= value; 
-        });
-
-        // Tax depending on the total of the category
-        organization.deductions.filter(o => o.category==category && o.base==category).forEach(deduction => {
-          let base = category_total;
-          let value = Math.round(base * deduction.rate / 100);
-          if (value > 0) {
-            rows.push(['Cout Employeur', deduction.title, value]);
-            rows.push([deduction.title, category, value]);
-          }
-          category_total += value;
-          if (deduction.deduced) net -= value; 
-        });
-
+    this.inputs = SampleJson.inputs;
+    this.inputs.forEach(o => this.values[o.variable] = o.default);
+    SampleJson.groups.forEach(group => {
+      let total: number = 0;
+      group.breakdown?.forEach(breakdown => {
+        let f = Function('c,v,r', "return "+breakdown.formula);
+        let value = f(group.constants, this.values, ref);
+        if ("ref" in breakdown) { ref[breakdown.ref as keyof typeof breakdown] = value; }
+        if (value > 0) { 
+          if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value]);
+          if (group.direction == 'backward') rows.push([breakdown.title, group.title, value]);
+          total += value;
+        }
       });
+      if ("ref" in group) ref[group.ref as keyof typeof group] = total;
     });
-    rows.push(['Cout Employeur', 'Net', net]);
 
-    this.loaderService.loadChartPackages(this.chartPackage).subscribe(() => {
+    let data = new google.visualization.DataTable();
+    data.addColumn('string', 'From');
+    data.addColumn('string', 'To'); 
+    data.addColumn('number', 'Weight');
+    data.addRows(rows);
 
-      let data = new google.visualization.DataTable();
-      data.addColumn('string', 'From');
-      data.addColumn('string', 'To'); 
-      data.addColumn('number', 'Weight');
-      data.addRows(rows);
-
-      // Setting the colors
-      // let labels = this.data?.map(o => [o[0], o[1]]).flat();
-      // let uniques = unique(labels); //.filter((o,i) => labels.indexOf(o)===i);
-      // this.options.sankey.node.colors = uniques.map(o => (o in this.colorMap) ? this.colorMap[o] : '#000');
-      
-      // Creating the chart
-      const chart = new google.visualization.Sankey(this.container.nativeElement);
-      
-      // data.addRows(this.data);
-      chart.draw(data, this.options);
-      
+    // Setting the colors
+    let colorMap = SampleJson.groups
+      .map(o=>o.breakdown.concat([{ 'title': o.title, 'color': <string>(("color" in o) ? o['color' as keyof typeof o] : '#000'), ref: '', formula: '' }]))
+      .flat()
+      .map(o=>({ 't': o.title, 'c': ("color" in o) ? o['color' as keyof typeof o] : undefined }));
+    let labels = unique(rows?.map(o => [o[0], o[1]]).flat());
+    console.log(colorMap);
+    this.options.sankey.node.colors = <string[]>labels.map(o => {
+      let color = colorMap.find(x=>x.t==o);
+      return color?.c ? color.c : '#000';
     });
+
+    // Drawing the chart
+    let chart = new google.visualization.Sankey(this.container.nativeElement);
+    chart.draw(data, this.options);
+
   }
-
-  // onReady(event: any) {
-  //   var observer = new MutationObserver((mutations: any) => {
-  //     mutations.forEach((mutation: any) => {
-  //       mutation.addedNodes.forEach((node: any, index: number) => {
-  //         let label = index;
-  //         if (node.tagName === 'text' && node.innerHTML in this.colorMap)
-  //           node.setAttribute('fill', this.colorMap[node.innerHTML]);
-  //       });
-  //     });
-  //   });
-  //   observer.observe(event.chart.container, {
-  //     childList: true,
-  //     subtree: true
-  //   });
-  // }
- 
  
 }

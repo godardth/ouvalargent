@@ -1,4 +1,11 @@
 <div class="sankey-container">
-    <input type="number" [(ngModel)]="income" />
-    <div #container></div>
+    <div class="inputs">
+        <ng-container *ngFor="let input of inputs">
+            <span>{{ input.label }}</span>
+            <input type="text" [(ngModel)]="values[input.variable]" (ngModelChange)="redrawChart()" />
+        </ng-container>
+    </div>
+    <div class="chart">
+        <div #container></div>
+    </div>
 </div>
