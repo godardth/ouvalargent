@@ -1,6 +1,13 @@
 {
     "inputs" : [
-        { "label": "Salaire Annuel Brut", "variable": "income", "type": "number", "default": 80000 }
+        { "label": "Salaire Brut (Annuel)", "variable": "income", "type": "number", "default": 80000 },
+        { "label": "Depenses Essence (Annuel)", "variable": "essence", "type": "number", "default": 6000 },
+        { "label": "Depenses Loyer (Annuel)", "variable": "loyer", "type": "number", "default": 6000 },
+        { "label": "Depenses Restaurant (Annuel)", "variable": "restaurant", "type": "number", "default": 6000 },
+        { "label": "Depenses Services (Annuel)", "variable": "services", "type": "number", "default": 6000 },
+        { "label": "Depenses Alimentation (Annuel)", "variable": "alimentation", "type": "number", "default": 6000 },
+        { "label": "Depenses Produits Manufactures (Annuel)", "variable": "produits", "type": "number", "default": 6000 },
+        { "label": "Epargne (Annuel)", "variable": "epargne", "type": "number", "default": 6000 }
     ],
     "groups": [
         {
@@ -34,7 +41,8 @@
         {
             "constants": {},
             "direction": "backward",
-            "title": "Cotisations Patronales", 
+            "title": "Cotisations Patronales",
+            "color": "#ff0000",
             "ref": "cpat", 
             "breakdown": [
                 { "title": "Maladie", "formula": "r['mal']" },
@@ -52,6 +60,7 @@
             "constants": {},
             "direction": "backward",
             "title": "Cotisations Salariales", 
+            "color": "#ff0000",
             "ref": "csal",
             "breakdown": [
                 { "title": "CSG", "formula": "r['csg']" },
@@ -66,14 +75,30 @@
             "direction": "forward",
             "title": "Net (Imposable)", 
             "breakdown": [
-                { "ref": "ir", "title": "Impots sur le revenu", "formula": "r['netI'] * c['TaxRate'] / 100" },
-                { "title": "Net apres impots", "formula": "r['netI'] * (100-c['TaxRate']) / 100" }
+                { "ref": "ir", "title": "Impots sur le revenu", "formula": "r['netI'] * c['TaxRate'] / 100", "color": "#ff0000" },
+                { "ref": "net", "title": "Net apres impots", "formula": "r['netI'] * (100-c['TaxRate']) / 100" }
+            ]
+        },
+        {
+            "constants": {},
+            "direction": "forward",
+            "title": "Net apres impots", 
+            "breakdown": [
+                { "ref": "essence", "title": "Essence", "formula": "v['essence']" },
+                { "ref": "loyer", "title": "Loyer", "formula": "v['loyer']" },
+                { "ref": "restau", "title": "Restaurant", "formula": "v['restaurant']" },
+                { "ref": "services", "title": "Services", "formula": "v['services']" },
+                { "ref": "alimentation", "title": "Alimentation", "formula": "v['alimentation']" },
+                { "ref": "manu", "title": "Produits Manufactures", "formula": "v['produits']" },
+                { "ref": "other", "title": "Other", "formula": "r['net']-v['essence']-v['loyer']-v['restaurant']-v['services']-v['alimentation']-v['produits']-v['epargne']" },
+                { "ref": "epargne", "title": "Epargne", "formula": "v['epargne']" }
             ]
         },
         {
             "constants": {},
             "direction": "backward",
             "title": "Gouvernement", 
+            "color": "#ff0000",
             "breakdown": [
                 { "title": "Cotisations Salariales", "formula": "r['csal']" },
                 { "title": "Cotisations Patronales", "formula": "r['cpat']" },

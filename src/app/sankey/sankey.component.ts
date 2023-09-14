@@ -57,6 +57,8 @@ export class SankeyComponent implements OnInit {
 
   ngOnInit() {
     this.loaderService.loadChartPackages(this.chartPackage).subscribe(() => {
+      this.inputs = SampleJson.inputs;
+      this.inputs.forEach(o => this.values[o.variable] = o.default);
       this.redrawChart();
     });
   }
@@ -69,8 +71,6 @@ export class SankeyComponent implements OnInit {
     // Prepare Data
     let ref: any = {};
     let rows: Array<any> = [];
-    this.inputs = SampleJson.inputs;
-    this.inputs.forEach(o => this.values[o.variable] = o.default);
     SampleJson.groups.forEach(group => {
       let total: number = 0;
       group.breakdown?.forEach(breakdown => {
@@ -98,7 +98,6 @@ export class SankeyComponent implements OnInit {
       .flat()
       .map(o=>({ 't': o.title, 'c': ("color" in o) ? o['color' as keyof typeof o] : undefined }));
     let labels = unique(rows?.map(o => [o[0], o[1]]).flat());
-    console.log(colorMap);
     this.options.sankey.node.colors = <string[]>labels.map(o => {
       let color = colorMap.find(x=>x.t==o);
       return color?.c ? color.c : '#000';
@@ -108,6 +107,11 @@ export class SankeyComponent implements OnInit {
     let chart = new google.visualization.Sankey(this.container.nativeElement);
     chart.draw(data, this.options);
 
+  }
+
+  update(variable: string, value: any) {
+    this.values[variable] = value;
+    this.redrawChart();
   }
  
 }
