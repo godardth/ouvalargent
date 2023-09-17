@@ -4,7 +4,7 @@
         <ng-container *ngFor="let input of inputs">
             <div>
                 <span>{{ input.label }}</span><br>
-                <input type="text" [ngModel]="values[input.variable]" (ngModelChange)="update(input.variable, $event)" />
+                <input type="number" [ngModel]="values[input.variable]" (ngModelChange)="update(input.variable, $event)" />
             </div>
         </ng-container>
     </div>
