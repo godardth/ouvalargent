@@ -1,14 +1,20 @@
 {
     "inputs" : [
         { "label": "Salaire Brut (Annuel)", "variable": "income", "type": "number", "default": 80000 },
-        { "label": "Depenses Essence (Annuel)", "variable": "essence", "type": "number", "default": 6000 },
+        { "label": "Depenses Essence (L/An)", "variable": "essence", "type": "number", "default": 2000 },
         { "label": "Depenses Loyer (Annuel)", "variable": "loyer", "type": "number", "default": 6000 },
         { "label": "Depenses Restaurant (Annuel)", "variable": "restaurant", "type": "number", "default": 6000 },
         { "label": "Depenses Services (Annuel)", "variable": "services", "type": "number", "default": 6000 },
-        { "label": "Depenses Alimentation (Annuel)", "variable": "alimentation", "type": "number", "default": 6000 },
+        { "label": "Depenses Alimentation (Annuel)", "variable": "alim", "type": "number", "default": 6000 },
         { "label": "Depenses Produits Manufactures (Annuel)", "variable": "produits", "type": "number", "default": 6000 },
         { "label": "Epargne (Annuel)", "variable": "epargne", "type": "number", "default": 6000 }
     ],
+    "constants": {
+        "gas_price": 2,
+        "vat1": 0.2,
+        "vat2": 0.1,
+        "vat3": 0.055
+    },
     "groups": [
         {
             "constants": {
@@ -16,10 +22,7 @@
                 "PlafondA": 43992,
                 "PlafondB": 175968
             },
-            "direction": "forward",
-            "title": "Cout", 
-            "color": "#0000ff",
-            "breakdown": [
+            "direction": "forward", "title": "Value Created", "color": "#0000ff", "breakdown": [
                 { "ref": "mal", "title": "Maladie", "formula": "v['income'] * 0.13", "color": "#ff0000" },
                 { "ref": "retE", "title": "Vieillesse (E)", "formula": "Math.min(v['income'], v['PlafondA']) * 0.0855 + v['income'] * 0.019", "color": "#ff0000" },
                 { "ref": "retS", "title": "Vieillesse (S)", "formula": "Math.min(v['income'], c['PlafondA']) * 0.069 + v['income'] * 0.004", "color": "#ff0000" },
@@ -39,12 +42,7 @@
             ]
         },
         {
-            "constants": {},
-            "direction": "backward",
-            "title": "Cotisations Patronales",
-            "color": "#ff0000",
-            "ref": "cpat", 
-            "breakdown": [
+            "direction": "backward", "title": "Cotisations Patronales", "color": "#ff0000", "ref": "cpat", "breakdown": [
                 { "title": "Maladie", "formula": "r['mal']" },
                 { "title": "Allocations Familiales", "formula": "r['alloc']" },
                 { "title": "Vieillesse (E)", "formula": "r['retE']" },
@@ -57,11 +55,7 @@
             ]
         },
         {
-            "constants": {},
-            "direction": "backward",
-            "title": "Cotisations Salariales", 
-            "color": "#ff0000",
-            "ref": "csal",
+            "direction": "backward", "title": "Cotisations Salariales", "color": "#ff0000", "ref": "csal",
             "breakdown": [
                 { "title": "CSG", "formula": "r['csg']" },
                 { "title": "CRDS", "formula": "r['crds']" },
@@ -69,40 +63,105 @@
             ]
         },
         {
-            "constants": {
-                "TaxRate": 17.5
-            },
-            "direction": "forward",
-            "title": "Net (Imposable)", 
-            "breakdown": [
+            "constants": { "TaxRate": 17.5 },
+            "direction": "forward", "title": "Net (Imposable)", "breakdown": [
                 { "ref": "ir", "title": "Impots sur le revenu", "formula": "r['netI'] * c['TaxRate'] / 100", "color": "#ff0000" },
                 { "ref": "net", "title": "Net apres impots", "formula": "r['netI'] * (100-c['TaxRate']) / 100" }
             ]
         },
         {
-            "constants": {},
-            "direction": "forward",
-            "title": "Net apres impots", 
-            "breakdown": [
-                { "ref": "essence", "title": "Essence", "formula": "v['essence']" },
-                { "ref": "loyer", "title": "Loyer", "formula": "v['loyer']" },
+            "direction": "forward", "title": "Net apres impots", "breakdown": [
+                { "ref": "essence", "title": "Essence", "formula": "v['essence'] * c['gas_price']" },
+                { "ref": "loyer", "title": "Loyer", "formula": "v['loyer']*1.1" },
                 { "ref": "restau", "title": "Restaurant", "formula": "v['restaurant']" },
                 { "ref": "services", "title": "Services", "formula": "v['services']" },
-                { "ref": "alimentation", "title": "Alimentation", "formula": "v['alimentation']" },
+                { "ref": "alim", "title": "Alimentation", "formula": "v['alim']" },
                 { "ref": "manu", "title": "Produits Manufactures", "formula": "v['produits']" },
-                { "ref": "other", "title": "Other", "formula": "r['net']-v['essence']-v['loyer']-v['restaurant']-v['services']-v['alimentation']-v['produits']-v['epargne']" },
-                { "ref": "epargne", "title": "Epargne", "formula": "v['epargne']" }
+                { "ref": "other", "title": "Other", "formula": "r['net']-v['essence']-v['loyer']-v['restaurant']-v['services']-v['alim']-v['produits']-v['epargne']" },
+                { "ref": "epargne", "title": "Value Saved", "formula": "v['epargne']" }
             ]
         },
         {
-            "constants": {},
-            "direction": "backward",
-            "title": "Gouvernement", 
-            "color": "#ff0000",
-            "breakdown": [
+            "direction": "forward", "title": "Essence", "color": "#ff0000", "breakdown": [
+                { "ref": "ticpe", "title": "TICPE", "formula": "v['essence']*0.7004", "color": "#ff0000" },
+                { "ref": "gas_tva", "title": "TVA", "formula": "r['essence']*c['vat1']/(1+c['vat1'])", "color": "#ff0000" },
+                { "ref": "essence_at", "title": "Value Consumed", "formula": "r['essence']-r['ticpe']-r['gas_tva']", "color": "#00ff00" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Loyer", "color": "#ff0000", "breakdown": [
+                { "ref": "taxhab", "title": "Taxe d'habitation", "formula": "v['loyer']*0.1", "color": "#ff0000" },
+                { "ref": "taxfon", "title": "Taxe Fonciere", "formula": "v['loyer']*0.1", "color": "#ff0000" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Restaurant", "color": "#ff0000", "breakdown": [
+                { "ref": "restau_tva", "title": "TVA", "formula": "r['restau']*c['vat2']/(1+c['vat2'])", "color": "#ff0000" },
+                { "ref": "restau_hr", "title": "Labor Cost", "formula": "(r['restau']-r['restau_tva'])*0.5" },
+                { "ref": "restau_mat", "title": "Materials", "formula": "(r['restau']-r['restau_tva'])*0.1" },
+                { "ref": "restau_pnl", "title": "Corporate Profit", "formula": "(r['restau']-r['restau_tva'])*0.1" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Services", "color": "#ff0000", "breakdown": [
+                { "ref": "services_tva", "title": "TVA", "formula": "r['services']*c['vat1']/(1+c['vat1'])", "color": "#ff0000" },
+                { "ref": "services_hr", "title": "Labor Cost", "formula": "(r['services']-r['services_tva'])*0.8", "color": "#ff0000" },
+                { "ref": "services_pnl", "title": "Corporate Profit", "formula": "(r['services']-r['services_tva'])*0.2" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Alimentation", "color": "#ff0000", "breakdown": [
+                { "ref": "alim_tva", "title": "TVA", "formula": "v['alim']*c['vat1']/(1+c['vat1'])", "color": "#ff0000" },
+                { "ref": "alim_hr", "title": "Labor Cost", "formula": "(v['alim']-r['alim_tva'])*0.4", "color": "#ff0000" },
+                { "ref": "alim_mat", "title": "Materials", "formula": "(v['alim']-r['alim_tva'])*0.4", "color": "#ff0000" },
+                { "ref": "alim_pnl", "title": "Corporate Profit", "formula": "(v['alim']-r['alim_tva'])*0.2", "color": "#ff0000" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Produits Manufactures", "color": "#ff0000", "breakdown": [
+                { "ref": "manu_tva", "title": "TVA", "formula": "r['manu']*c['vat1']/(1+c['vat1'])", "color": "#ff0000" },
+                { "ref": "manu_hr", "title": "Labor Cost", "formula": "(r['manu']-r['manu_tva'])*0.4", "color": "#ff0000" },
+                { "ref": "manu_mat", "title": "Materials", "formula": "(r['manu']-r['manu_tva'])*0.4", "color": "#ff0000" },
+                { "ref": "manu_pnl", "title": "Corporate Profit", "formula": "(r['manu']-r['manu_tva'])*0.2", "color": "#ff0000" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Other", "color": "#ff0000", "breakdown": [
+                { "ref": "other_tva", "title": "TVA", "formula": "r['other']*c['vat1']/(1+c['vat1'])", "color": "#ff0000" },
+                { "ref": "other_hr", "title": "Labor Cost", "formula": "(r['other']-r['other_tva'])*0.4", "color": "#ff0000" },
+                { "ref": "other_mat", "title": "Materials", "formula": "(r['other']-r['other_tva'])*0.4", "color": "#ff0000" },
+                { "ref": "other_pnl", "title": "Corporate Profit", "formula": "(r['other']-r['other_tva'])*0.2", "color": "#ff0000" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Corporate Profit", "color": "#00ff00", "breakdown": [
+                { "ref": "corp_tax", "title": "Corporate Tax", "formula": "(r['alim_pnl']+r['other_pnl'])*(1/3)", "color": "#ff0000" },
+                { "title": "Value Consumed", "formula": "(r['alim_pnl']+r['other_pnl'])*(2/3)" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Labor Cost", "color": "#00ff00", "breakdown": [
+                { "ref": "lab_tax", "title": "Labor Taxes", "formula": "(r['alim_hr']+r['other_hr']+r['restau_hr']+r['services_hr']+r['manu_hr'])*(1/3)" },
+                { "ref": "lab_val", "title": "Value Consumed", "formula": "(r['alim_hr']+r['other_hr']+r['restau_hr']+r['services_hr']+r['manu_hr'])*(2/3)" }
+            ]
+        },
+        {
+            "direction": "forward", "title": "Materials", "breakdown": [
+                { "title": "Value Consumed", "formula": "r['other_mat']+r['restau_mat']+r['alim_mat']+r['manu_mat']" }
+            ]
+        },
+        {
+            "direction": "backward", "title": "Gouvernement", "ref": "gov", "color": "#ff0000", "breakdown": [
                 { "title": "Cotisations Salariales", "formula": "r['csal']" },
                 { "title": "Cotisations Patronales", "formula": "r['cpat']" },
-                { "title": "Impots sur le revenu", "formula": "r['ir']" } 
+                { "title": "Impots sur le revenu", "formula": "r['ir']" },
+                { "title": "Taxe d'habitation", "formula": "r['taxhab']" },
+                { "title": "Taxe Fonciere", "formula": "r['taxfon']" },
+                { "title": "TICPE", "formula": "r['ticpe']" },
+                { "title": "TVA", "formula": "r['gas_tva']+r['restau_tva']+r['services_tva']+r['alim_tva']+r['manu_tva']+r['other_tva']" },
+                { "title": "Corporate Tax", "formula": "r['corp_tax']" },
+                { "title": "Labor Taxes", "formula": "r['lab_tax']" },
+                { "title": "Deficit", "formula": "10000", "color": "#ff0000" } 
             ]
         }
     ]
