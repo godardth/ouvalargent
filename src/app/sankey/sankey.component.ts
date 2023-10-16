@@ -15,8 +15,8 @@ export class SankeyComponent implements OnInit {
 
   options = {
     'id': 'sankey_chart',
-    'height': 700, 
-    'width': 1000,
+    'height': 1100, 
+    'width': 1500,
     'sankey': {
       'node': { 
         'width': 15,
@@ -51,6 +51,7 @@ export class SankeyComponent implements OnInit {
 
   // income: number = 80000;
   inputs: Array<any> = [];
+  constants: any = {};
   values: any = {};
 
   constructor(private loaderService: ScriptLoaderService) {}
@@ -58,6 +59,7 @@ export class SankeyComponent implements OnInit {
   ngOnInit() {
     this.loaderService.loadChartPackages(this.chartPackage).subscribe(() => {
       this.inputs = SampleJson.inputs;
+      this.constants = SampleJson.constants;
       this.inputs.forEach(o => this.values[o.variable] = o.default);
       this.redrawChart();
     });
@@ -75,7 +77,8 @@ export class SankeyComponent implements OnInit {
       let total: number = 0;
       group.breakdown?.forEach(breakdown => {
         let f = Function('c,v,r', "return "+breakdown.formula);
-        let value = f(group.constants, this.values, ref);
+        let constants = Object.assign(this.constants, group.constants);
+        let value = f(constants, this.values, ref);
         if ("ref" in breakdown) { ref[breakdown.ref as keyof typeof breakdown] = value; }
         if (value > 0) { 
           if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value]);
