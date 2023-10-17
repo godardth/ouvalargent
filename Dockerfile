@@ -12,5 +12,5 @@ COPY . /home/prod
 WORKDIR /home/prod
 RUN ../node_modules/.bin/ng build
 RUN mv /home/prod/dist/* /usr/share/nginx/html
-RUN rm -rf /home/prod
+#RUN rm -rf /home/prod
 COPY nginx.conf /etc/nginx/nginx.conf
