@@ -1,0 +1,11 @@
+services:
+
+  web:
+    build:
+      context: .
+    ports:
+      - 80:4200
+    volumes:
+      - ./:/home/dev
+    working_dir: /home/dev
+    command: ../node_modules/.bin/ng serve --host 0.0.0.0
