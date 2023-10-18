@@ -1,14 +1,18 @@
 <div class="sankey-container">
     <div class="inputs">
-        <h4 text-align="center">Inputs</h4>
-        <ng-container *ngFor="let input of inputs">
-            <div>
-                <span>{{ input.label }}</span><br>
-                <input type="number" [ngModel]="values[input.variable]" (ngModelChange)="update(input.variable, $event)" />
-            </div>
-        </ng-container>
+        <form class="example-form">
+            <h4 text-align="center">Inputs</h4>
+            <ng-container *ngFor="let input of inputs">
+                <div>
+                    <mat-form-field class="example-full-width">
+                        <mat-label>{{ input.label }}</mat-label>
+                        <input matInput name="{{input.variable}}" [ngModel]="values[input.variable]" (ngModelChange)="update(input.variable, $event)">
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </form>
     </div>
     <div class="chart">
-        <div #container></div>
+        <div id="container"></div>
     </div>
 </div>
