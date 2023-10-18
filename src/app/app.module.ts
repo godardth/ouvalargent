@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { GoogleChartsModule } from 'angular-google-charts';
 import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -17,8 +16,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
-    FormsModule,s
+    FormsModule,
     BrowserAnimationsModule,
     MatInputModule
   ],
