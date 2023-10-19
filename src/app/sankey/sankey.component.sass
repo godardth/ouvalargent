@@ -1,21 +1,27 @@
 .sankey-container
     display: flex
     align-items: stretch
-    gap: 50px
+    gap: 20px
     height: 100vh
 
     .inputs
         display: flex
         flex-direction: column
-        flex: 0 0 300px
+        flex: 0 0 auto
         background: #f5f5f7
         border-right: 1px solid #DDD
-        padding: 15px
+        padding: 15px 0px
         gap: 15px
+        h4
+            text-align: center
 
     .chart
         display: flex
-        align-items: center
+        align-items: stretch
         justify-content: center
         overflow: scroll
         flex: 1 1 500px
+        padding: 15px
+        position: relative
+        #container
+            width: 100%

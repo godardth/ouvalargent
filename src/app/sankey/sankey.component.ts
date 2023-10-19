@@ -15,88 +15,116 @@ import SampleJson from '../../assets/france.json';
 export class SankeyComponent implements OnInit {
 
   inputs: Array<any> = [];
+  colors: any = {};
   constants: any = {};
   values: any = {};
   
   // D3 Sankey
   private svg: any;
-  private margin = 50;
-  private width = 1200 - (this.margin * 2);
-  private height = 800 - (this.margin * 2);
+  private margin = 100;
+  private observer?: ResizeObserver;
   private dataSankey: SankeyGraph<any, any> = {nodes: [], links: []};
 
   ngOnInit() {
     this.inputs = SampleJson.inputs;
+    this.colors = SampleJson.colors;
     this.constants = SampleJson.constants;
     this.inputs.forEach(o => this.values[o.variable] = o.default);
-    this.createChart();
-    this.updateChart();
+    this.updateChartData();
+  }
+
+  ngAfterViewChecked() {
+    if (!this.observer) {
+      this.observer = new ResizeObserver(entries => {
+        this.updateChartDrawing();
+      });
+      let container = document.getElementById('container');
+      if (container) this.observer.observe(container);
+    }
   }
   
   update(variable: string, value: any) {
     this.values[variable] = parseInt(value);
-    this.updateChart();
+    this.updateChartData();
   }
-  
-  createChart(): void {
-    this.svg = d3.select("#container")
-      .append("svg")
-      .attr("width", this.width + (this.margin * 2))
-      .attr("height", this.height + (this.margin * 2))
-      .append("g")
-      .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
-  }
-  
-  updateChart() {
-    
-    // Helpers
-    let unique = (arr: Array<any>) => arr.filter((o,i)=>arr.indexOf(o)===i);
+
+  updateChartData() {
 
     // Prepare Data
     let ref: any = {};
     let rows: Array<any> = [];
     let nodes: Array<string> = [];
+    let totals: any = {};
     SampleJson.groups.forEach(group => {
       let total: number = 0;
       if (!nodes.includes(group.title)) nodes.push(group.title);
-      group.breakdown?.forEach(breakdown => {
+      group.breakdown?.forEach((breakdown: any) => {
         if (!nodes.includes(breakdown.title)) nodes.push(breakdown.title);
         let f = Function('c,v,r', "return "+breakdown.formula);
         let constants = Object.assign(this.constants, group.constants);
         let value = f(constants, this.values, ref);
-        console.log(group.title, breakdown.title, value)
+        let color = breakdown.color ? (breakdown.color[0]=='#' ? breakdown.color : this.colors[breakdown.color]) : '#00000022';
         if ("ref" in breakdown) { ref[breakdown.ref as keyof typeof breakdown] = value; }
         if (value > 0) { 
-          if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value]);
-          if (group.direction == 'backward') rows.push([breakdown.title, group.title, value]);
+          if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value, color]);
+          if (group.direction == 'backward') rows.push([breakdown.title, group.title, value, color]);
           total += value;
         }
       });
+      totals[group.title] = total;
       if ("ref" in group) ref[group.ref as keyof typeof group] = total;
     });
     
     // Format Nodes & Links in D3-Sankey format
-    this.dataSankey.nodes = nodes.map((title: any) => ({name: title}));
+    let getNodeColor = (title: string) => {
+      let color = SampleJson.groups.find((g: any) => g.title==title)?.color;
+      return color ? (color[0]=='#' ? color : this.colors[color]) : '#000';
+    }
+    let getNodeValue = (title: string) => {
+      return totals[title];
+    };
+    this.dataSankey.nodes = nodes.map((title: any) => ({name: title, color: getNodeColor(title), total: getNodeValue(title)}));
     let i = (title: string) => this.dataSankey.nodes.findIndex((o: any) => o.name == title);
-    this.dataSankey.links = rows.map((o: any) => ({ source: i(o[0]), target: i(o[1]), value: o[2] }));
+    this.dataSankey.links = rows.map((o: any) => ({ source: i(o[0]), target: i(o[1]), value: o[2], color: o[3] }));
+
+    // Redraw the chart
+    this.updateChartDrawing();
+
+  }
     
-    console.log(this.values, this.dataSankey);
+  updateChartDrawing() {
+    
+    // Get the container size
+    var container = document.getElementById('container');
+    if (!container) return;
+    var width = container.clientWidth - (this.margin * 2);
+    var height = container.clientHeight - (this.margin * 2);
+    console.log('width', width, height);
+    if (width < 0 || height < 0) return;
+    console.log('width', width, height);
     
     // Update the chart
+    d3.select("#container").html("")
+    this.svg = d3.select("#container")
+      .append("svg")
+      .attr("width", width + (this.margin * 2))
+      .attr("height", height + (this.margin * 2))
+      .append("g")
+      .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
     let sankey = Sankey()
       .nodeWidth(10)
       .nodePadding(20)
-      .size([this.width, this.height]);
+      .size([width, height]);
     sankey(this.dataSankey);
     
     // Links
     this.svg.selectAll('.link')
-      .data(this.dataSankey.links, (d: any) => `${d.source.name}-${d.target.name}`)
+      .data(this.dataSankey.links, (d: any) => d.name)
       .enter().append('path')
       .attr('class', 'link')
       .attr('d', SankeyLinkHorizontal())
       .style('stroke-width', (d: any) => Math.max(1, d.width))
-      .style('stroke', '#00000022')
+      .style('stroke', (d: any) => d.color)
       .style('fill', 'none');
 
     // Nodes
@@ -112,7 +140,7 @@ export class SankeyComponent implements OnInit {
     n.append("rect")
       .attr("height", (d: any) => d.y1 - d.y0)
       .attr("width", sankey.nodeWidth())
-      .style("fill", "blue");
+      .style("fill", (d: any) => d.color);
     
     // Nodes - Label
     n.append("text")
@@ -120,7 +148,7 @@ export class SankeyComponent implements OnInit {
       .attr("y", (d: any) => (d.y1 - d.y0) / 2)
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
-      .text((d: any) => d.name);
+      .text((d: any) => d.name + '('+Math.round(d.total)+')');
     
   }
 
