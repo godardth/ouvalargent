@@ -18,18 +18,23 @@ export class SankeyComponent implements OnInit {
   colors: any = {};
   constants: any = {};
   values: any = {};
+  displayOptions = {
+    'showValues': true,
+    'asPercent': false
+  }
   
   // D3 Sankey
   private svg: any;
   private margin = 100;
   private observer?: ResizeObserver;
   private dataSankey: SankeyGraph<any, any> = {nodes: [], links: []};
+  private valueCreated: number = 1;
 
   ngOnInit() {
     this.inputs = SampleJson.inputs;
     this.colors = SampleJson.colors;
     this.constants = SampleJson.constants;
-    this.inputs.forEach(o => this.values[o.variable] = o.default);
+    this.inputs.forEach((s: any) => s.inputs.forEach((o: any) => this.values[o.variable] = o.default));
     this.updateChartData();
   }
 
@@ -54,7 +59,6 @@ export class SankeyComponent implements OnInit {
     let ref: any = {};
     let rows: Array<any> = [];
     let nodes: Array<string> = [];
-    let totals: any = {};
     SampleJson.groups.forEach(group => {
       let total: number = 0;
       if (!nodes.includes(group.title)) nodes.push(group.title);
@@ -71,8 +75,8 @@ export class SankeyComponent implements OnInit {
           total += value;
         }
       });
-      totals[group.title] = total;
       if ("ref" in group) ref[group.ref as keyof typeof group] = total;
+      if (group.title == 'Value Created') this.valueCreated = total;
     });
     
     // Format Nodes & Links in D3-Sankey format
@@ -81,7 +85,16 @@ export class SankeyComponent implements OnInit {
       return color ? (color[0]=='#' ? color : this.colors[color]) : '#000';
     }
     let getNodeValue = (title: string) => {
-      return totals[title];
+      let left = rows.filter((row: any) => row[1]==title);
+      let rght = rows.filter((row: any) => row[0]==title);
+      let sum = (rows: any[]) => rows.reduce((a: number, c: any) => a+c[2], 0);
+      if (left.length && rght.length) {
+        if (sum(left)!=sum(rght)) console.log('WARNING: Left & Right values mismatch for block "'+title+'" (left='+sum(left)+"/right="+sum(rght)+')');
+        return sum(left);
+      }
+      if (left.length) return sum(left);
+      if (rght.length) return sum(rght);
+      return 0;
     };
     this.dataSankey.nodes = nodes.map((title: any) => ({name: title, color: getNodeColor(title), total: getNodeValue(title)}));
     let i = (title: string) => this.dataSankey.nodes.findIndex((o: any) => o.name == title);
@@ -99,9 +112,7 @@ export class SankeyComponent implements OnInit {
     if (!container) return;
     var width = container.clientWidth - (this.margin * 2);
     var height = container.clientHeight - (this.margin * 2);
-    console.log('width', width, height);
     if (width < 0 || height < 0) return;
-    console.log('width', width, height);
     
     // Update the chart
     d3.select("#container").html("")
@@ -142,14 +153,31 @@ export class SankeyComponent implements OnInit {
       .attr("width", sankey.nodeWidth())
       .style("fill", (d: any) => d.color);
     
-    // Nodes - Label
-    n.append("text")
+    // Nodes - Labels
+    let th = 30;
+    let dy = (d: any) => (d.y1 - d.y0);
+    let val = (d: any, p?: boolean) => {
+      let ret = ''
+      if (!this.displayOptions.showValues) return '';
+      if (!d.total) ret = '-';
+      if (this.displayOptions.asPercent) ret = (Math.round(10 * 100 * d.total / this.valueCreated)/10) + '%';
+      if (!this.displayOptions.asPercent) ret = Math.round(d.total).toLocaleString();
+      return (p?' (':'') + ret + (p?')':'')
+    };
+    let labelText = n.append("text")
       .attr("x", -6)
-      .attr("y", (d: any) => (d.y1 - d.y0) / 2)
-      .attr("dy", ".35em")
+      .attr("y", (d: any) => dy(d) / 2)
+      .attr("dy", (d: any) => (this.displayOptions.showValues && (dy(d) > th)) ? "-0.35em" : "0.35em")
       .attr("text-anchor", "end")
-      .text((d: any) => d.name + '('+Math.round(d.total)+')');
-    
+      .text((d: any) => (this.displayOptions.showValues && (dy(d) > th)) ? '' : d.name+''+val(d, true));
+    labelText.append("tspan")
+      .attr("x", -6)
+      .text((d: any) => dy(d) > th ? d.name : '');
+    labelText.append("tspan")
+      .attr("x", -6)
+      .attr("dy", "1.3em")
+      .text((d: any) => dy(d) > th ? val(d): '');
+
   }
 
 }
