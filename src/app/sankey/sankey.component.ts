@@ -20,7 +20,7 @@ export class SankeyComponent implements OnInit {
   values: any = {};
   displayOptions = {
     'showValues': true,
-    'asPercent': false
+    'asPercent': true
   }
   
   // D3 Sankey

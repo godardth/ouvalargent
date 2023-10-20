@@ -40,13 +40,12 @@
                 { "ref": "accTra", "title": "Accident du travail", "formula": "v['income'] * 0.0224", "color": "tax_link" },
                 { "ref": "fnal", "title": "FNAL", "formula": "v['income'] * 0.005", "color": "tax_link" },
                 { "ref": "cspa", "title": "Contrib. pour l'autonomie", "formula": "v['income'] * 0.003", "color": "tax_link" },
-                { "ref": "trans", "title": "Versement de transport", "formula": "v['income'] * 0", "color": "tax_link" },
                 { "ref": "cds", "title": "Contrib. au dialogue social", "formula": "v['income'] * 0.00016", "color": "tax_link" },
                 { "ref": "chom", "title": "Assurance Chomage", "formula": "v['income'] * 0.0405", "color": "tax_link" },
                 { "ref": "ags", "title": "AGS (FNGS)", "formula": "v['income'] * 0.0015", "color": "tax_link" },
                 { "ref": "csg", "title": "CSG", "formula": "v['income'] * 0.092", "color": "tax_link" },
                 { "ref": "crds", "title": "CRDS", "formula": "v['income'] * 0.005", "color": "tax_link" },
-                { "ref": "forSoc", "title": "Forfait Social", "formula": "(r['mal']+r['retE']+r['alloc']+r['accTra']+r['fnal']+r['cspa']+r['trans']+r['cds'])*0.3", "color": "tax_link" },
+                { "ref": "forSoc", "title": "Forfait Social", "formula": "(r['mal']+r['retE']+r['alloc']+r['accTra']+r['fnal']+r['cspa']+r['cds'])*0.3", "color": "tax_link" },
                 { "ref": "netI", "title": "Net (Imposable)", "formula": "v['income'] - (r['retS']+r['csg']+r['crds'])", "color": "value_link" }
             ]
         },
