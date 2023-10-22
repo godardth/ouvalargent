@@ -200,5 +200,9 @@
         { "title": "Corporate Tax", "color": "tax_block" },
         { "title": "Value Consumed", "color": "value_block" },
         { "title": "Value Saved", "color": "value_block" }
+    ],
+    "definitions": [
+        { "title": "Value Created", "definition": "Economic value, corresponds to the value a company is ready to pay to have you onboard." },
+        { "title": "Cotisations Salariales", "definition": "These are all the mandatory government taxes on salary deducted from the gross salary." }
     ]
 }

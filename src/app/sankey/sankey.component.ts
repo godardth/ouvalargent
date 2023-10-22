@@ -4,7 +4,7 @@ import {
   sankeyLinkHorizontal as SankeyLinkHorizontal,
   SankeyGraph 
 } from 'd3-sankey';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import SampleJson from '../../assets/france.json';
 
 @Component({
@@ -17,34 +17,39 @@ export class SankeyComponent implements OnInit {
   inputs: Array<any> = [];
   colors: any = {};
   constants: any = {};
+  definitions: Array<any> = [];
   values: any = {};
   displayOptions = {
     'showValues': true,
     'asPercent': true
   }
+  legend?: any;
   
   // D3 Sankey
   private svg: any;
   private margin = 100;
-  private observer?: ResizeObserver;
+  private resizeObserver?: ResizeObserver;
   private dataSankey: SankeyGraph<any, any> = {nodes: [], links: []};
   private valueCreated: number = 1;
+
+  constructor(
+    private cdRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.inputs = SampleJson.inputs;
     this.colors = SampleJson.colors;
     this.constants = SampleJson.constants;
+    this.definitions = SampleJson.definitions;
     this.inputs.forEach((s: any) => s.inputs.forEach((o: any) => this.values[o.variable] = o.default));
     this.updateChartData();
   }
 
   ngAfterViewChecked() {
-    if (!this.observer) {
-      this.observer = new ResizeObserver(entries => {
-        this.updateChartDrawing();
-      });
-      let container = document.getElementById('container');
-      if (container) this.observer.observe(container);
+    if (!this.resizeObserver) {
+      this.resizeObserver = new ResizeObserver(() => this.updateChartDrawing());
+      let body = document.getElementById('body');
+      if (body) this.resizeObserver.observe(body);
     }
   }
   
@@ -70,8 +75,8 @@ export class SankeyComponent implements OnInit {
         let color = breakdown.color ? (breakdown.color[0]=='#' ? breakdown.color : this.colors[breakdown.color]) : '#00000022';
         if ("ref" in breakdown) { ref[breakdown.ref as keyof typeof breakdown] = value; }
         if (value > 0) { 
-          if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value, color]);
-          if (group.direction == 'backward') rows.push([breakdown.title, group.title, value, color]);
+          if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value, color, f]);
+          if (group.direction == 'backward') rows.push([breakdown.title, group.title, value, color, f]);
           total += value;
         }
       });
@@ -98,7 +103,7 @@ export class SankeyComponent implements OnInit {
     };
     this.dataSankey.nodes = nodes.map((title: any) => ({name: title, color: getNodeColor(title), total: getNodeValue(title)}));
     let i = (title: string) => this.dataSankey.nodes.findIndex((o: any) => o.name == title);
-    this.dataSankey.links = rows.map((o: any) => ({ source: i(o[0]), target: i(o[1]), value: o[2], color: o[3] }));
+    this.dataSankey.links = rows.map((o: any) => ({ source: i(o[0]), target: i(o[1]), value: o[2], color: o[3], formula:  o[4]}));
 
     // Redraw the chart
     this.updateChartDrawing();
@@ -111,7 +116,7 @@ export class SankeyComponent implements OnInit {
     var container = document.getElementById('container');
     if (!container) return;
     var width = container.clientWidth - (this.margin * 2);
-    var height = container.clientHeight - (this.margin * 2);
+    var height = container.clientHeight - (this.margin * 2) - 10;
     if (width < 0 || height < 0) return;
     
     // Update the chart
@@ -129,6 +134,7 @@ export class SankeyComponent implements OnInit {
     sankey(this.dataSankey);
     
     // Links
+    let getDefinition = (title: string) => this.definitions.find(o => o.title == title)?.definition;
     this.svg.selectAll('.link')
       .data(this.dataSankey.links, (d: any) => d.name)
       .enter().append('path')
@@ -136,7 +142,26 @@ export class SankeyComponent implements OnInit {
       .attr('d', SankeyLinkHorizontal())
       .style('stroke-width', (d: any) => Math.max(1, d.width))
       .style('stroke', (d: any) => d.color)
-      .style('fill', 'none');
+      .style('fill', 'none')
+      .on("mouseover", (e: any, d: any) => {
+        this.legend = {
+          'source': {
+            'title': d.source.name,
+            'definition': getDefinition(d.source.name)
+          },
+          'target': {
+            'title': d.target.name,
+            'definition': getDefinition(d.target.name)
+          },
+          'formula': undefined,
+          'comment': undefined
+        };
+        this.cdRef.detectChanges();
+      })
+      .on("mouseout", () => {
+        this.legend = undefined;
+        this.cdRef.detectChanges();
+      });
 
     // Nodes
     let n = this.svg

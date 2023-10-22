@@ -21,20 +21,48 @@
                     </div>
                 </ng-container>
             </ng-container>
-            <h4>Display Options</h4>
+            <h4>Options</h4>
             <div class="input-container slide-toggle">
-                <mat-slide-toggle [(ngModel)]="displayOptions.showValues" (ngModelChange)="updateChartDrawing()">
-                    Show Values
-                </mat-slide-toggle>
+                <mat-slide-toggle [(ngModel)]="displayOptions.showValues" (ngModelChange)="updateChartDrawing()">Show Values</mat-slide-toggle>
             </div>
-            <div class="input-container slide-toggle">
-                <mat-slide-toggle [(ngModel)]="displayOptions.asPercent" (ngModelChange)="updateChartDrawing()">
-                    As % of value created
-                </mat-slide-toggle>
+            <div class="input-container slide-toggle" *ngIf="displayOptions.showValues">
+                <mat-slide-toggle [(ngModel)]="displayOptions.asPercent" (ngModelChange)="updateChartDrawing()">As % of value created</mat-slide-toggle>
             </div>
         </div>
     </div>
     <div class="chart">
-        <div id="container"></div>
+        <div class="header">
+            <div class="title">Personal Economic Value Chain</div>
+        </div>
+        <div id="body" class="body">
+            <div id="container"></div>
+        </div>
+        <div class="footer">
+            <!-- <div class="footer-container">
+                <div class="empty-text" [ngClass]="{'visible': !legend}">Hover on a link to learn more</div>
+                <div class="container-details" [ngClass]="{'visible': legend}">
+                    <div class="detail" *ngIf="legend?.source">
+                        <div class="title">{{ legend.source?.title }}</div>
+                        <div class="text">{{ legend.source?.definition }}</div>
+                    </div>
+                    <div class="detail" *ngIf="legend?.target">
+                        <div class="title">{{ legend.target?.title }}</div>
+                        <div class="text">{{ legend.target?.definition }}</div>
+                    </div>
+                    <div class="detail" *ngIf="legend?.formula">
+                        <div class="title">Formula ({{legend?.formula}})</div>
+                        <div id="math-formula" class="text">
+                            <ng-template #noExpression>
+                                <div class="no-expression">Expression unavailable</div>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="detail" *ngIf="legend?.comment">
+                        <div class="title">Comment</div>
+                        <div class="text">{{ legend.comment }}</div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
     </div>
 </div>

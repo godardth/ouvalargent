@@ -69,9 +69,6 @@ export class MathService {
     // Take initial typesetting which MathJax performs into account
     window.MathJax.startup.promise.then(() => {
       element.innerHTML = math;
-      console.log('render - after', element.innerHTML);
-      setTimeout( () => { window.MathJax.typeset() }, 500 );
-      console.log(window.MathJax.typeset, window.MathJax.typesetPromise)
       window.MathJax.typesetPromise().then(() => {
         console.log('Math typesetting complete');
       });

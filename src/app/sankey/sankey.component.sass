@@ -1,7 +1,6 @@
 .sankey-container
     display: flex
     align-items: stretch
-    gap: 20px
     height: 100vh
 
     .inputs
@@ -10,8 +9,10 @@
         flex: 0 0 auto
         background: #f5f5f7
         border-right: 1px solid #DDD
-        padding: 15px 0px
         gap: 15px
+        overflow-y: scroll
+        &::-webkit-scrollbar
+            width: 0
         h4
             text-align: center
             padding-top: 7px
@@ -33,11 +34,63 @@
 
     .chart
         display: flex
+        flex-direction: column
+        height: 100%
+        max-height: 100%
         align-items: stretch
         justify-content: center
-        overflow: scroll
+        overflow: hidden
         flex: 1 1 500px
-        padding: 15px
         position: relative
-        #container
+        .body
+            position: relative
+            flex: 1 1 auto
+            #container
+                height: 100%
+        .header, .footer
+            background: #fafafa
+        .header
+            flex: 0 0 45px
+            display: flex
+            justify-content: space-around
+            align-items: center
+            border-bottom: 1px solid #eaeaea
+            .title
+                font-weight: 300 
+                color: #12191d
+                font-size: 1.35rem
+        .footer
+            position: absolute
+            bottom: 0
+            border-top: 1px solid #eaeaea
             width: 100%
+            max-height: 300px
+            transition: max-height 1s ease
+            .empty-text, .container-details
+                opacity: 0
+                transition: opacity 0.3s ease-in-out
+                &.visible
+                    opacity: 1
+                    transition: opacity 0.3s ease-in-out 0.15s
+            .empty-text
+                position: absolute
+                bottom: 15px
+                width: 100%
+                font-weight: 300 
+                color: #90a4ae
+                font-size: 1.35rem
+                text-align: center
+            .container-details
+                width: 100%
+                display: flex
+                flex: 0 0 100%
+                justify-content: space-around
+                align-items: center
+                padding: 25px
+                .detail
+                    text-align: center
+                    .title
+                        font-weight: 500
+                    .comment
+                        font-weight: 400
+            
