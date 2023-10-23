@@ -25,6 +25,22 @@ export interface DialogData {
   name: string;
 }
 
+@Component({
+  selector: 'disclaimer-dialog',
+  templateUrl: 'disclaimer.html',
+  styleUrls: ['./disclaimer.sass'],
+  standalone: true,
+  imports: [ MatDialogModule, MatButtonModule ]
+})
+export class DialogOverviewExampleDialog {
+  constructor(
+    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+  ) {}
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
 
 @Component({
   selector: 'app-sankey',
@@ -61,7 +77,15 @@ export class SankeyComponent implements OnInit {
     this.colors = SampleJson.colors;
     this.constants = SampleJson.constants;
     this.definitions = SampleJson.definitions;
-    this.inputs.forEach((s: any) => s.inputs.forEach((o: any) => this.values[o.variable] = o.default));
+    this.inputs.forEach((category: any) => {
+      category.sections.forEach((section: any) => {
+        section.inputs.forEach((input: any) => {
+          section.selected = ("optional" in section) ? section.selected : true;
+          section.selected = ("selected" in section) ? section.selected : false;
+          this.values[input.variable] = section.selected ? input.default : 0;
+        });
+      });
+    });
     this.updateChartData();
     this.openDialog();
   }
@@ -79,6 +103,13 @@ export class SankeyComponent implements OnInit {
       data: {},
       width: '800px'
     });
+  }
+
+  sectionSelectionChange(section: any, selected: boolean) {
+    for(let input of section.inputs) {
+      this.values[input.variable] = selected ? input.default : 0;
+    }
+    this.updateChartData();
   }
   
   update(variable: string, value: any) {
@@ -233,23 +264,4 @@ export class SankeyComponent implements OnInit {
 
   }
 
-}
-
-
-@Component({
-  selector: 'disclaimer-dialog',
-  templateUrl: 'disclaimer.html',
-  styleUrls: ['./disclaimer.sass'],
-  standalone: true,
-  imports: [ MatDialogModule, MatButtonModule ]
-})
-export class DialogOverviewExampleDialog {
-  constructor(
-    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {}
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
 }

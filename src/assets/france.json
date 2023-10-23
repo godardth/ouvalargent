@@ -1,17 +1,23 @@
 {
     "inputs" : [
-        {"section": "Revenus", "inputs": [
-            { "label": "Salaire Brut", "variable": "income", "type": "number", "default": 80000 }
+        { "category": "Revenus", "sections": [
+            { "section": "Je suis salarié", "optional": false, "selected": true, "inputs": [
+                { "label": "Salaire Brut", "variable": "income", "type": "number", "default": 39800 }
+            ]}
         ]},
-        {"section": "Budget", "inputs": [
-            { "label": "Carburant (L/An)", "variable": "essence", "type": "number", "default": 2000 },
-            { "label": "Loyer", "variable": "loyer", "type": "slider", "default": 6000 },
-            { "label": "Restaurants", "variable": "restaurant", "type": "slider", "default": 6000 },
-            { "label": "Services", "variable": "services", "type": "slider", "default": 6000 },
-            { "label": "Alimentation", "variable": "alim", "type": "slider", "default": 6000 },
-            { "label": "Produits Manufacturés", "variable": "produits", "type": "slider", "default": 6000 },
-            { "label": "Epargne", "variable": "epargne", "type": "slider", "default": 6000 }
-        ]}    
+        { "category": "Dépenses", "sections": [
+            { "section": "Budget", "inputs": [
+                { "label": "Loyer", "variable": "loyer", "type": "slider", "default": 3000 },
+                { "label": "Restaurants", "variable": "restaurant", "type": "slider", "default": 1000 },
+                { "label": "Services", "variable": "services", "type": "slider", "default": 2000 },
+                { "label": "Alimentation", "variable": "alim", "type": "slider", "default": 3600 },
+                { "label": "Produits Manufacturés", "variable": "produits", "type": "slider", "default": 3000 },
+                { "label": "Epargne", "variable": "epargne", "type": "slider", "default": 3000 }
+            ]},
+            { "section": "Je possède un véhicule", "optional": true, "selected": true, "inputs": [
+                { "label": "Carburant (Litres/An)", "variable": "essence", "type": "number", "default": 1200 }
+            ]}
+        ]}
     ],
     "constants": {
         "gas_price": 2,

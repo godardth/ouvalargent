@@ -9,32 +9,48 @@
     <div class="main-section">
         <div class="inputs">
             <div class="form">
-                <ng-container *ngFor="let section of inputs">
-                    <h4>{{ section.section }}</h4>
-                    <ng-container *ngFor="let input of section.inputs">
-                        <div class="input-container">
-                            <mat-form-field *ngIf="input.type=='number'">
-                                <mat-label>{{ input.label }}</mat-label>
-                                <input matInput name="{{input.variable}}" [ngModel]="values[input.variable]" (ngModelChange)="update(input.variable, $event)">
-                            </mat-form-field>
-                            <div class="slider-container" *ngIf="input.type=='slider'">
-                                <div class="label-container">
-                                    <label id="example-name-label" class="example-name-label">{{ input.label }}</label>
-                                    <label class="example-value-label">{{values[input.variable] }}</label>
-                                </div>
-                                <mat-slider  min="0" max="20000" step="1">
-                                    <input name="{{input.variable}}" matSliderThumb [(ngModel)]="values[input.variable]" (ngModelChange)="update(input.variable, $event)">
-                                </mat-slider>
+                <ng-container *ngFor="let category of inputs">
+                    <h4>{{ category.category }}</h4>
+                    <ng-container *ngFor="let section of category.sections">
+                        <div class="section">
+                            <!-- Section Title -->
+                            <!-- <p *ngIf="!section.optional" class="section-header">{{ section.section }}</p> -->
+                            <div *ngIf="section.optional" class="input-section slide-toggle">
+                                <mat-slide-toggle [(ngModel)]="section.selected" (ngModelChange)="sectionSelectionChange(section, $event)">
+                                    {{ section.section }}
+                                </mat-slide-toggle>
+                                <!-- <button mat-mini-fab color="primary" [disableRipple]="true">
+                                    <mat-icon>close_fullscreen</mat-icon>
+                                </button> -->
                             </div>
+                            <ng-container *ngFor="let input of section.inputs">
+                                <div *ngIf="!section.optional || section.optional && section.selected" class="input-container" [ngClass]="{'indent': section.optional}">
+                                    <mat-form-field *ngIf="input.type=='number'">
+                                        <mat-label>{{ input.label }}</mat-label>
+                                        <input matInput name="{{input.variable}}" [ngModel]="values[input.variable]" (ngModelChange)="update(input.variable, $event)">
+                                    </mat-form-field>
+                                    <div class="slider-container" *ngIf="input.type=='slider'">
+                                        <div class="label-container">
+                                            <label id="example-name-label" class="example-name-label">{{ input.label }}</label>
+                                            <label class="example-value-label">{{values[input.variable] }}</label>
+                                        </div>
+                                        <mat-slider  min="0" max="20000" step="1">
+                                            <input name="{{input.variable}}" matSliderThumb [(ngModel)]="values[input.variable]" (ngModelChange)="update(input.variable, $event)">
+                                        </mat-slider>
+                                    </div>
+                                </div>
+                            </ng-container>
                         </div>
                     </ng-container>
                 </ng-container>
-                <h4>Options</h4>
-                <div class="input-container slide-toggle">
-                    <mat-slide-toggle [(ngModel)]="displayOptions.showValues" (ngModelChange)="updateChartDrawing()">Afficher les montants</mat-slide-toggle>
-                </div>
-                <div class="input-container slide-toggle" *ngIf="displayOptions.showValues">
-                    <mat-slide-toggle [(ngModel)]="displayOptions.asPercent" (ngModelChange)="updateChartDrawing()">En % de la valeur créée</mat-slide-toggle>
+                <div class="section">
+                    <h4>Affichage</h4>
+                    <div class="input-section slide-toggle">
+                        <mat-slide-toggle [(ngModel)]="displayOptions.showValues" (ngModelChange)="updateChartDrawing()">Afficher les montants</mat-slide-toggle>
+                    </div>
+                    <div class="input-section slide-toggle" *ngIf="displayOptions.showValues">
+                        <mat-slide-toggle [(ngModel)]="displayOptions.asPercent" (ngModelChange)="updateChartDrawing()">En % de la valeur créée</mat-slide-toggle>
+                    </div>
                 </div>
             </div>
         </div>

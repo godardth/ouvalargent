@@ -49,20 +49,37 @@
                 text-align: center
                 padding-top: 7px
                 margin-top: 20px
-                border-top: 1px solid #cacaca
                 &:first-child
                     border-top: none
-            .input-container
-                padding: 0 16px
-                &.slide-toggle
-                    margin-top: 10px
-            .slider-container
+            .section
                 display: flex
                 flex-direction: column
-                .label-container
+                margin-bottom: 20px
+                .section-header
+                    text-align: left
+                    margin: 0 16px
+                .input-section
                     display: flex
                     justify-content: space-between
-                    gap: 20px
+                    align-items: center
+                    margin: 0px 16px
+                    &.slide-toggle
+                        margin-top: 10px
+                button
+                    mat-icon 
+                        font-size: 20px
+
+                .input-container
+                    margin: 0px 16px
+                    &.indent
+                        margin: 0 16px 0 60px
+                .slider-container
+                    display: flex
+                    flex-direction: column
+                    .label-container
+                        display: flex
+                        justify-content: space-between
+                        gap: 20px
 
         .chart
             display: flex
