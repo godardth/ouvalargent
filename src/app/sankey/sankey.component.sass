@@ -1,96 +1,117 @@
 .sankey-container
     display: flex
+    flex-direction: column
     align-items: stretch
     height: 100vh
-
-    .inputs
+    .navbar
         display: flex
-        flex-direction: column
-        flex: 0 0 auto
-        background: #f5f5f7
-        border-right: 1px solid #DDD
-        gap: 15px
-        overflow-y: scroll
-        &::-webkit-scrollbar
-            width: 0
-        h4
-            text-align: center
-            padding-top: 7px
-            margin-top: 20px
-            border-top: 1px solid #cacaca
-            &:first-child
-                border-top: none
-        .input-container
-            padding: 0 16px
-            &.slide-toggle
-                margin-top: 10px
-        .slider-container
+        justify-content: space-between
+        align-items: baseline
+        background: #36454F
+        color: #fcfcfc
+        .title
+            font-size: 1.10rem
+            font-weight: 300
+            margin: 11px 25px
+        .links
+            display: flex
+            height: 100%
+            a 
+                display: flex
+                align-items: center
+                text-decoration: none
+                color: #fcfcfc
+                cursor: pointer
+                height: 100%
+                padding: 0px 15px
+                svg
+                    fill: #fcfcfc
+                    margin-right: 7px
+                &:hover
+                    background: #242d34
+                    color: #ffffff
+                    svg
+                        fill: #ffffff
+    .main-section
+        display: flex
+        flex: 1 0 auto
+        .inputs
             display: flex
             flex-direction: column
-            .label-container
-                display: flex
-                justify-content: space-between
-                gap: 20px
-
-    .chart
-        display: flex
-        flex-direction: column
-        height: 100%
-        max-height: 100%
-        align-items: stretch
-        justify-content: center
-        overflow: hidden
-        flex: 1 1 500px
-        position: relative
-        .body
-            position: relative
-            flex: 1 1 auto
-            #container
-                height: 100%
-        .header, .footer
-            background: #fafafa
-        .header
-            flex: 0 0 45px
-            display: flex
-            justify-content: space-around
-            align-items: center
-            border-bottom: 1px solid #eaeaea
-            .title
-                font-weight: 300 
-                color: #12191d
-                font-size: 1.35rem
-        .footer
-            position: absolute
-            bottom: 0
-            border-top: 1px solid #eaeaea
-            width: 100%
-            max-height: 300px
-            transition: max-height 1s ease
-            .empty-text, .container-details
-                opacity: 0
-                transition: opacity 0.3s ease-in-out
-                &.visible
-                    opacity: 1
-                    transition: opacity 0.3s ease-in-out 0.15s
-            .empty-text
-                position: absolute
-                bottom: 15px
-                width: 100%
-                font-weight: 300 
-                color: #90a4ae
-                font-size: 1.35rem
+            flex: 0 0 auto
+            background: #f5f5f7
+            border-right: 1px solid #DDD
+            gap: 15px
+            overflow-y: scroll
+            &::-webkit-scrollbar
+                width: 0
+            h4
                 text-align: center
-            .container-details
-                width: 100%
+                padding-top: 7px
+                margin-top: 20px
+                border-top: 1px solid #cacaca
+                &:first-child
+                    border-top: none
+            .input-container
+                padding: 0 16px
+                &.slide-toggle
+                    margin-top: 10px
+            .slider-container
                 display: flex
-                flex: 0 0 100%
-                justify-content: space-around
-                align-items: center
-                padding: 25px
-                .detail
+                flex-direction: column
+                .label-container
+                    display: flex
+                    justify-content: space-between
+                    gap: 20px
+
+        .chart
+            display: flex
+            flex-direction: column
+            height: 100%
+            max-height: 100%
+            align-items: stretch
+            justify-content: center
+            overflow: hidden
+            flex: 1 1 500px
+            position: relative
+            .body
+                position: relative
+                flex: 1 1 auto
+                #container
+                    height: 100%
+            .footer
+                position: absolute
+                bottom: 0
+                border-top: 1px solid #eaeaea
+                background: #fafafa
+                width: 100%
+                max-height: 300px
+                transition: max-height 1s ease
+                .empty-text, .container-details
+                    opacity: 0
+                    transition: opacity 0.3s ease-in-out
+                    &.visible
+                        opacity: 1
+                        transition: opacity 0.3s ease-in-out 0.15s
+                .empty-text
+                    position: absolute
+                    bottom: 15px
+                    width: 100%
+                    font-weight: 300 
+                    color: #90a4ae
+                    font-size: 1.35rem
                     text-align: center
-                    .title
-                        font-weight: 500
-                    .comment
-                        font-weight: 400
-            
+                .container-details
+                    width: 100%
+                    display: flex
+                    flex: 0 0 100%
+                    justify-content: space-around
+                    align-items: center
+                    padding: 25px
+                    .detail
+                        text-align: center
+                        .title
+                            font-weight: 500
+                        .comment
+                            font-weight: 400
+                

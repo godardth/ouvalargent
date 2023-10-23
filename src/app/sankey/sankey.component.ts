@@ -4,8 +4,27 @@ import {
   sankeyLinkHorizontal as SankeyLinkHorizontal,
   SankeyGraph 
 } from 'd3-sankey';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { 
+  Component, 
+  OnInit, 
+  ChangeDetectorRef, 
+  Inject 
+} from '@angular/core';
+import { 
+  MatDialog, 
+  MAT_DIALOG_DATA, 
+  MatDialogRef, 
+  MatDialogModule
+} from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import SampleJson from '../../assets/france.json';
+
+
+export interface DialogData {
+  animal: string;
+  name: string;
+}
+
 
 @Component({
   selector: 'app-sankey',
@@ -33,7 +52,8 @@ export class SankeyComponent implements OnInit {
   private valueCreated: number = 1;
 
   constructor(
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -43,6 +63,7 @@ export class SankeyComponent implements OnInit {
     this.definitions = SampleJson.definitions;
     this.inputs.forEach((s: any) => s.inputs.forEach((o: any) => this.values[o.variable] = o.default));
     this.updateChartData();
+    this.openDialog();
   }
 
   ngAfterViewChecked() {
@@ -51,6 +72,13 @@ export class SankeyComponent implements OnInit {
       let body = document.getElementById('body');
       if (body) this.resizeObserver.observe(body);
     }
+  }
+
+  openDialog(): void {
+    this.dialog.open(DialogOverviewExampleDialog, {
+      data: {},
+      width: '800px'
+    });
   }
   
   update(variable: string, value: any) {
@@ -81,7 +109,7 @@ export class SankeyComponent implements OnInit {
         }
       });
       if ("ref" in group) ref[group.ref as keyof typeof group] = total;
-      if (group.title == 'Value Created') this.valueCreated = total;
+      if (group.title == 'Valeur Créée') this.valueCreated = total;
     });
     
     // Format Nodes & Links in D3-Sankey format
@@ -205,4 +233,23 @@ export class SankeyComponent implements OnInit {
 
   }
 
+}
+
+
+@Component({
+  selector: 'disclaimer-dialog',
+  templateUrl: 'disclaimer.html',
+  styleUrls: ['./disclaimer.sass'],
+  standalone: true,
+  imports: [ MatDialogModule, MatButtonModule ]
+})
+export class DialogOverviewExampleDialog {
+  constructor(
+    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
 }

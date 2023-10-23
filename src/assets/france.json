@@ -1,15 +1,15 @@
 {
     "inputs" : [
-        {"section": "Income", "inputs": [
+        {"section": "Revenus", "inputs": [
             { "label": "Salaire Brut", "variable": "income", "type": "number", "default": 80000 }
         ]},
         {"section": "Budget", "inputs": [
             { "label": "Carburant (L/An)", "variable": "essence", "type": "number", "default": 2000 },
             { "label": "Loyer", "variable": "loyer", "type": "slider", "default": 6000 },
-            { "label": "Restaurant", "variable": "restaurant", "type": "slider", "default": 6000 },
+            { "label": "Restaurants", "variable": "restaurant", "type": "slider", "default": 6000 },
             { "label": "Services", "variable": "services", "type": "slider", "default": 6000 },
             { "label": "Alimentation", "variable": "alim", "type": "slider", "default": 6000 },
-            { "label": "Produits Manufactures", "variable": "produits", "type": "slider", "default": 6000 },
+            { "label": "Produits Manufacturés", "variable": "produits", "type": "slider", "default": 6000 },
             { "label": "Epargne", "variable": "epargne", "type": "slider", "default": 6000 }
         ]}    
     ],
@@ -32,7 +32,7 @@
                 "PlafondA": 43992,
                 "PlafondB": 175968
             },
-            "direction": "forward", "title": "Value Created", "color": "value_block", "breakdown": [
+            "direction": "forward", "title": "Valeur Créée", "color": "value_block", "breakdown": [
                 { "ref": "mal", "title": "Maladie", "formula": "v['income'] * 0.13", "color": "tax_link" },
                 { "ref": "retE", "title": "Vieillesse (E)", "formula": "Math.min(v['income'], c['PlafondA']) * 0.0855 + v['income'] * 0.019", "color": "tax_link" },
                 { "ref": "retS", "title": "Vieillesse (S)", "formula": "Math.min(v['income'], c['PlafondA']) * 0.069 + v['income'] * 0.004", "color": "tax_link" },
@@ -74,20 +74,20 @@
         {
             "constants": { "TaxRate": 17.5 },
             "direction": "forward", "title": "Net (Imposable)", "color": "value_block", "breakdown": [
-                { "ref": "ir", "title": "Impots sur le revenu", "formula": "r['netI'] * c['TaxRate'] / 100", "color": "tax_link" },
-                { "ref": "net", "title": "Net apres impots", "formula": "r['netI'] * (100-c['TaxRate']) / 100", "color": "value_link" }
+                { "ref": "ir", "title": "Impôt sur le revenu", "formula": "r['netI'] * c['TaxRate'] / 100", "color": "tax_link" },
+                { "ref": "net", "title": "Net après impôt", "formula": "r['netI'] * (100-c['TaxRate']) / 100", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Net apres impots", "color": "value_block", "breakdown": [
+            "direction": "forward", "title": "Net après impôt", "color": "value_block", "breakdown": [
                 { "ref": "essence", "title": "Carburant", "formula": "v['essence'] * c['gas_price']", "color": "value_link" },
                 { "ref": "loyer", "title": "Loyer", "formula": "v['loyer']", "color": "value_link" },
-                { "ref": "restau", "title": "Restaurant", "formula": "v['restaurant']", "color": "value_link" },
+                { "ref": "restau", "title": "Restaurants", "formula": "v['restaurant']", "color": "value_link" },
                 { "ref": "services", "title": "Services", "formula": "v['services']", "color": "value_link" },
                 { "ref": "alim", "title": "Alimentation", "formula": "v['alim']", "color": "value_link" },
-                { "ref": "manu", "title": "Produits Manufactures", "formula": "v['produits']", "color": "value_link" },
-                { "ref": "epargne", "title": "Value Saved", "formula": "v['epargne']", "color": "value_link" },
-                { "ref": "other", "title": "Other", "formula": "r['net']-r['essence']-r['loyer']-r['restau']-r['services']-r['alim']-r['manu']-r['epargne']", "color": "value_link" }
+                { "ref": "manu", "title": "Produits Manufacturés", "formula": "v['produits']", "color": "value_link" },
+                { "ref": "epargne", "title": "Valeur épargnée", "formula": "v['epargne']", "color": "value_link" },
+                { "ref": "other", "title": "Divers", "formula": "r['net']-r['essence']-r['loyer']-r['restau']-r['services']-r['alim']-r['manu']-r['epargne']", "color": "value_link" }
             ]
         },
         {
@@ -95,7 +95,7 @@
             "direction": "forward", "title": "Carburant", "color": "value_block", "breakdown": [
                 { "ref": "ticpewtva", "title": "TICPE+TVA", "formula": "v['essence']*c['TICPE']*(1+c['vat1'])", "color": "tax_link" },
                 { "ref": "gas_tva", "title": "TVA", "formula": "r['essence']*c['vat1']/(1+c['vat1'])", "color": "tax_link" },
-                { "ref": "essence_mat", "title": "Materials", "formula": "r['essence']-r['ticpewtva']-r['gas_tva']", "color": "value_link" }
+                { "ref": "essence_mat", "title": "Matières premières", "formula": "r['essence']-r['ticpewtva']-r['gas_tva']", "color": "value_link" }
             ]
         },
         {
@@ -106,75 +106,75 @@
         },
         {
             "direction": "forward", "title": "Loyer", "color": "value_block", "breakdown": [
-                { "ref": "taxfon", "title": "Taxe Fonciere", "formula": "v['loyer']*0.1", "color": "tax_link" },
-                { "title": "Value Consumed", "formula": "v['loyer']-r['taxfon']", "color": "value_link" }
+                { "ref": "taxfon", "title": "Taxe foncière", "formula": "v['loyer']*0.1", "color": "tax_link" },
+                { "title": "Valeur consommée", "formula": "v['loyer']-r['taxfon']", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Restaurant", "color": "value_block", "breakdown": [
+            "direction": "forward", "title": "Restaurants", "color": "value_block", "breakdown": [
                 { "ref": "restau_tva", "title": "TVA", "formula": "r['restau']*c['vat2']/(1+c['vat2'])", "color": "tax_link" },
-                { "ref": "restau_hr", "title": "Labor Cost", "formula": "(r['restau']-r['restau_tva'])*0.5", "color": "value_link" },
-                { "ref": "restau_mat", "title": "Materials", "formula": "(r['restau']-r['restau_tva'])*0.25", "color": "value_link" },
-                { "ref": "restau_pnl", "title": "Corporate Profit", "formula": "(r['restau']-r['restau_tva'])*0.25", "color": "value_link" }
+                { "ref": "restau_hr", "title": "Coût du travail", "formula": "(r['restau']-r['restau_tva'])*0.5", "color": "value_link" },
+                { "ref": "restau_mat", "title": "Matières premières", "formula": "(r['restau']-r['restau_tva'])*0.25", "color": "value_link" },
+                { "ref": "restau_pnl", "title": "Bénéfices d'entreprises", "formula": "(r['restau']-r['restau_tva'])*0.25", "color": "value_link" }
             ]
         },
         {
             "direction": "forward", "title": "Services", "color": "value_block", "breakdown": [
                 { "ref": "services_tva", "title": "TVA", "formula": "r['services']*c['vat1']/(1+c['vat1'])", "color": "tax_link" },
-                { "ref": "services_hr", "title": "Labor Cost", "formula": "(r['services']-r['services_tva'])*0.8", "color": "value_link" },
-                { "ref": "services_pnl", "title": "Corporate Profit", "formula": "(r['services']-r['services_tva'])*0.2", "color": "value_link" }
+                { "ref": "services_hr", "title": "Coût du travail", "formula": "(r['services']-r['services_tva'])*0.8", "color": "value_link" },
+                { "ref": "services_pnl", "title": "Bénéfices d'entreprises", "formula": "(r['services']-r['services_tva'])*0.2", "color": "value_link" }
             ]
         },
         {
             "direction": "forward", "title": "Alimentation", "color": "value_block", "breakdown": [
                 { "ref": "alim_tva", "title": "TVA", "formula": "v['alim']*c['vat1']/(1+c['vat1'])", "color": "tax_link" },
-                { "ref": "alim_hr", "title": "Labor Cost", "formula": "(v['alim']-r['alim_tva'])*0.4", "color": "value_link" },
-                { "ref": "alim_mat", "title": "Materials", "formula": "(v['alim']-r['alim_tva'])*0.4", "color": "value_link" },
-                { "ref": "alim_pnl", "title": "Corporate Profit", "formula": "(v['alim']-r['alim_tva'])*0.2", "color": "value_link" }
+                { "ref": "alim_hr", "title": "Coût du travail", "formula": "(v['alim']-r['alim_tva'])*0.4", "color": "value_link" },
+                { "ref": "alim_mat", "title": "Matières premières", "formula": "(v['alim']-r['alim_tva'])*0.4", "color": "value_link" },
+                { "ref": "alim_pnl", "title": "Bénéfices d'entreprises", "formula": "(v['alim']-r['alim_tva'])*0.2", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Produits Manufactures", "color": "value_block", "breakdown": [
+            "direction": "forward", "title": "Produits Manufacturés", "color": "value_block", "breakdown": [
                 { "ref": "manu_tva", "title": "TVA", "formula": "r['manu']*c['vat1']/(1+c['vat1'])", "color": "tax_link" },
-                { "ref": "manu_hr", "title": "Labor Cost", "formula": "(r['manu']-r['manu_tva'])*0.4", "color": "value_link" },
-                { "ref": "manu_mat", "title": "Materials", "formula": "(r['manu']-r['manu_tva'])*0.4", "color": "value_link" },
-                { "ref": "manu_pnl", "title": "Corporate Profit", "formula": "(r['manu']-r['manu_tva'])*0.2", "color": "value_link" }
+                { "ref": "manu_hr", "title": "Coût du travail", "formula": "(r['manu']-r['manu_tva'])*0.4", "color": "value_link" },
+                { "ref": "manu_mat", "title": "Matières premières", "formula": "(r['manu']-r['manu_tva'])*0.4", "color": "value_link" },
+                { "ref": "manu_pnl", "title": "Bénéfices d'entreprises", "formula": "(r['manu']-r['manu_tva'])*0.2", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Other", "color": "value_block", "breakdown": [
+            "direction": "forward", "title": "Divers", "color": "value_block", "breakdown": [
                 { "ref": "other_tva", "title": "TVA", "formula": "r['other']*c['vat1']/(1+c['vat1'])", "color": "tax_link" },
-                { "ref": "other_hr", "title": "Labor Cost", "formula": "(r['other']-r['other_tva'])*0.4", "color": "value_link" },
-                { "ref": "other_mat", "title": "Materials", "formula": "(r['other']-r['other_tva'])*0.4", "color": "value_link" },
-                { "ref": "other_pnl", "title": "Corporate Profit", "formula": "(r['other']-r['other_tva'])*0.2", "color": "value_link" }
+                { "ref": "other_hr", "title": "Coût du travail", "formula": "(r['other']-r['other_tva'])*0.4", "color": "value_link" },
+                { "ref": "other_mat", "title": "Matières premières", "formula": "(r['other']-r['other_tva'])*0.4", "color": "value_link" },
+                { "ref": "other_pnl", "title": "Bénéfices d'entreprises", "formula": "(r['other']-r['other_tva'])*0.2", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Corporate Profit", "color": "value_block", "breakdown": [
-                { "ref": "corp_tax", "title": "Corporate Tax", "formula": "(r['alim_pnl']+r['other_pnl']+r['restau_pnl']+r['manu_pnl']+r['services_pnl'])*(1/3)", "color": "tax_link" },
-                { "title": "Value Consumed", "formula": "(r['alim_pnl']+r['other_pnl']+r['restau_pnl']+r['manu_pnl']+r['services_pnl'])*(2/3)", "color": "value_link" }
+            "direction": "forward", "title": "Bénéfices d'entreprises", "color": "value_block", "breakdown": [
+                { "ref": "corp_tax", "title": "Impôt sur les sociétés", "formula": "(r['alim_pnl']+r['other_pnl']+r['restau_pnl']+r['manu_pnl']+r['services_pnl'])*(1/3)", "color": "tax_link" },
+                { "title": "Valeur consommée", "formula": "(r['alim_pnl']+r['other_pnl']+r['restau_pnl']+r['manu_pnl']+r['services_pnl'])*(2/3)", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Labor Cost", "color": "value_block", "breakdown": [
-                { "ref": "lab_tax", "title": "Labor Taxes", "formula": "(r['alim_hr']+r['other_hr']+r['restau_hr']+r['services_hr']+r['manu_hr'])*(1/3)", "color": "tax_link" },
-                { "ref": "lab_val", "title": "Value Consumed", "formula": "(r['alim_hr']+r['other_hr']+r['restau_hr']+r['services_hr']+r['manu_hr'])*(2/3)", "color": "value_link" }
+            "direction": "forward", "title": "Coût du travail", "color": "value_block", "breakdown": [
+                { "ref": "lab_tax", "title": "Taxes sur le travail", "formula": "(r['alim_hr']+r['other_hr']+r['restau_hr']+r['services_hr']+r['manu_hr'])*(1/3)", "color": "tax_link" },
+                { "ref": "lab_val", "title": "Valeur consommée", "formula": "(r['alim_hr']+r['other_hr']+r['restau_hr']+r['services_hr']+r['manu_hr'])*(2/3)", "color": "value_link" }
             ]
         },
         {
-            "direction": "forward", "title": "Materials", "color": "value_block", "breakdown": [
-                { "title": "Value Consumed", "formula": "r['other_mat']+r['restau_mat']+r['alim_mat']+r['manu_mat']+r['essence_mat']", "color": "value_link" }
+            "direction": "forward", "title": "Matières premières", "color": "value_block", "breakdown": [
+                { "title": "Valeur consommée", "formula": "r['other_mat']+r['restau_mat']+r['alim_mat']+r['manu_mat']+r['essence_mat']", "color": "value_link" }
             ]
         },
         {
             "direction": "backward", "title": "Gouvernement", "ref": "gov", "color": "tax_block", "breakdown": [
                 { "title": "Cotisations Salariales", "formula": "r['csal']", "color": "tax_link" },
                 { "title": "Cotisations Patronales", "formula": "r['cpat']", "color": "tax_link" },
-                { "title": "Impots sur le revenu", "formula": "r['ir']", "color": "tax_link" },
-                { "title": "Taxe Fonciere", "formula": "r['taxfon']", "color": "tax_link" },
+                { "title": "Impôt sur le revenu", "formula": "r['ir']", "color": "tax_link" },
+                { "title": "Taxe foncière", "formula": "r['taxfon']", "color": "tax_link" },
                 { "title": "TVA", "formula": "r['gas_tva']+r['restau_tva']+r['services_tva']+r['alim_tva']+r['manu_tva']+r['other_tva']+r['ticpe_tva']", "color": "tax_link" },
-                { "title": "Corporate Tax", "formula": "r['corp_tax']", "color": "tax_link" },
-                { "title": "Labor Taxes", "formula": "r['lab_tax']", "color": "tax_link" },
+                { "title": "Impôt sur les sociétés", "formula": "r['corp_tax']", "color": "tax_link" },
+                { "title": "Taxes sur le travail", "formula": "r['lab_tax']", "color": "tax_link" },
                 { "title": "Future Value", "formula": "10000", "color": "tax_link" } 
             ]
         },
@@ -190,19 +190,19 @@
         { "title": "FNAL", "color": "tax_block" },
         { "title": "TVA", "color": "tax_block" },
         { "title": "Maladie", "color": "tax_block" },
-        { "title": "Taxe Fonciere", "color": "tax_block" },
+        { "title": "Taxe foncière", "color": "tax_block" },
         { "title": "Contrib. au dialogue social", "color": "tax_block" },
         { "title": "Accident du travail", "color": "tax_block" },
-        { "title": "Impots sur le revenu", "color": "tax_block" },
+        { "title": "Impôt sur le revenu", "color": "tax_block" },
         { "title": "Contrib. pour l'autonomie", "color": "tax_block" },
         { "title": "AGS (FNGS)", "color": "tax_block" },
-        { "title": "Labor Taxes", "color": "tax_block" },
-        { "title": "Corporate Tax", "color": "tax_block" },
-        { "title": "Value Consumed", "color": "value_block" },
-        { "title": "Value Saved", "color": "value_block" }
+        { "title": "Taxes sur le travail", "color": "tax_block" },
+        { "title": "Impôt sur les sociétés", "color": "tax_block" },
+        { "title": "Valeur consommée", "color": "value_block" },
+        { "title": "Valeur épargnée", "color": "value_block" }
     ],
     "definitions": [
-        { "title": "Value Created", "definition": "Economic value, corresponds to the value a company is ready to pay to have you onboard." },
+        { "title": "Valeur Créée", "definition": "Economic value, corresponds to the value a company is ready to pay to have you onboard." },
         { "title": "Cotisations Salariales", "definition": "These are all the mandatory government taxes on salary deducted from the gross salary." }
     ]
 }
