@@ -181,10 +181,10 @@
                 { "title": "TVA", "formula": "r['gas_tva']+r['restau_tva']+r['services_tva']+r['alim_tva']+r['manu_tva']+r['other_tva']+r['ticpe_tva']", "color": "tax_link" },
                 { "title": "Impôt sur les sociétés", "formula": "r['corp_tax']", "color": "tax_link" },
                 { "title": "Taxes sur le travail", "formula": "r['lab_tax']", "color": "tax_link" },
-                { "title": "Future Value", "formula": "10000", "color": "tax_link" } 
+                { "title": "Dette Créée", "formula": "10000", "color": "tax_link" } 
             ]
         },
-        { "title": "Future Value", "color": "value_block" },
+        { "title": "Dette Créée", "color": "value_block" },
         { "title": "Maladie", "color": "tax_block" },
         { "title": "CSG", "color": "tax_block" },
         { "title": "CRDS", "color": "tax_block" },
