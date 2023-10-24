@@ -175,7 +175,7 @@ export class SankeyComponent implements OnInit {
     var container = document.getElementById('container');
     if (!container) return;
     var width = container.clientWidth - (this.margin * 2);
-    var height = container.clientHeight - (this.margin * 2) - 10;
+    var height = container.clientHeight - (this.margin * 2) - 20;
     if (width < 0 || height < 0) return;
     
     // Update the chart
