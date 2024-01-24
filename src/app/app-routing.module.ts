@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SankeyComponent } from './sankey/sankey.component';
 
 const routes: Routes = [
-  { path: '', component: SankeyComponent }
+  { path: ':json', component: SankeyComponent }
 ];
 
 @NgModule({

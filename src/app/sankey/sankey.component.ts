@@ -10,6 +10,7 @@ import {
   ChangeDetectorRef, 
   Inject 
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { 
   MatDialog, 
   MAT_DIALOG_DATA, 
@@ -49,10 +50,7 @@ export class DialogOverviewExampleDialog {
 })
 export class SankeyComponent implements OnInit {
 
-  inputs: Array<any> = [];
-  colors: any = {};
-  constants: any = {};
-  definitions: Array<any> = [];
+  data?: any;
   values: any = {};
   displayOptions = {
     'showValues': true,
@@ -69,25 +67,30 @@ export class SankeyComponent implements OnInit {
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.inputs = SampleJson.inputs;
-    this.colors = SampleJson.colors;
-    this.constants = SampleJson.constants;
-    this.definitions = SampleJson.definitions;
-    this.inputs.forEach((category: any) => {
-      category.sections.forEach((section: any) => {
-        section.inputs.forEach((input: any) => {
-          section.selected = ("optional" in section) ? section.selected : true;
-          section.selected = ("selected" in section) ? section.selected : false;
-          this.values[input.variable] = section.selected ? input.default : 0;
-        });
-      });
+    this.route.params.subscribe(params => {
+      let file = params['json'] ? params['json'] : 'france';
+      import(`../../assets/${file}.json`)
+        .then(data => {
+          this.data = data;
+          this.data.inputs.forEach((category: any) => {
+            category.sections.forEach((section: any) => {
+              section.inputs.forEach((input: any) => {
+                section.selected = ("optional" in section) ? section.selected : true;
+                section.selected = ("selected" in section) ? section.selected : false;
+                this.values[input.variable] = section.selected ? input.default : 0;
+              });
+            });
+          });
+          this.updateChartData();
+          this.openDialog();
+        })
+        .catch(err => console.log(err.message));
     });
-    this.updateChartData();
-    this.openDialog();
   }
 
   ngAfterViewChecked() {
@@ -118,20 +121,21 @@ export class SankeyComponent implements OnInit {
   }
 
   updateChartData() {
+    if (!this.data) return;
 
     // Prepare Data
     let ref: any = {};
     let rows: Array<any> = [];
     let nodes: Array<string> = [];
-    SampleJson.groups.forEach(group => {
+    this.data.groups.forEach((group: any) => {
       let total: number = 0;
       if (!nodes.includes(group.title)) nodes.push(group.title);
       group.breakdown?.forEach((breakdown: any) => {
         if (!nodes.includes(breakdown.title)) nodes.push(breakdown.title);
         let f = Function('c,v,r', "return "+breakdown.formula);
-        let constants = Object.assign(this.constants, group.constants);
+        let constants = Object.assign(this.data.constants, group.constants);
         let value = f(constants, this.values, ref);
-        let color = breakdown.color ? (breakdown.color[0]=='#' ? breakdown.color : this.colors[breakdown.color]) : '#00000022';
+        let color = breakdown.color ? (breakdown.color[0]=='#' ? breakdown.color : this.data.colors[breakdown.color]) : '#00000022';
         if ("ref" in breakdown) { ref[breakdown.ref as keyof typeof breakdown] = value; }
         if (value > 0) { 
           if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value, color, f]);
@@ -145,8 +149,8 @@ export class SankeyComponent implements OnInit {
     
     // Format Nodes & Links in D3-Sankey format
     let getNodeColor = (title: string) => {
-      let color = SampleJson.groups.find((g: any) => g.title==title)?.color;
-      return color ? (color[0]=='#' ? color : this.colors[color]) : '#000';
+      let color = this.data.groups.find((g: any) => g.title==title)?.color;
+      return color ? (color[0]=='#' ? color : this.data.colors[color]) : '#000';
     }
     let getNodeValue = (title: string) => {
       let left = rows.filter((row: any) => row[1]==title);
@@ -193,7 +197,7 @@ export class SankeyComponent implements OnInit {
     sankey(this.dataSankey);
     
     // Links
-    let getDefinition = (title: string) => this.definitions.find(o => o.title == title)?.definition;
+    let getDefinition = (title: string) => this.data.definitions.find((o: any) => o.title == title)?.definition;
     this.svg.selectAll('.link')
       .data(this.dataSankey.links, (d: any) => d.name)
       .enter().append('path')

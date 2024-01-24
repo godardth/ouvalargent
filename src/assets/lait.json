@@ -1,5 +1,5 @@
 {
-    "title": "Simulateur du taux de prelevements obligatoirs effectif",
+    "title": "Prix du lait",
     "inputs" : [
         { "category": "Revenus", "sections": [
             { "section": "Je suis salarié", "optional": false, "selected": true, "inputs": [
