@@ -4,44 +4,11 @@ import {
   sankeyLinkHorizontal as SankeyLinkHorizontal,
   SankeyGraph 
 } from 'd3-sankey';
-import { 
-  Component, 
-  OnInit, 
-  ChangeDetectorRef, 
-  Inject 
-} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { 
-  MatDialog, 
-  MAT_DIALOG_DATA, 
-  MatDialogRef, 
-  MatDialogModule
-} from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import SampleJson from '../../assets/france.json';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogOverviewExampleDialog } from '../disclaimer/disclaimer.component';
 
-
-export interface DialogData {
-  animal: string;
-  name: string;
-}
-
-@Component({
-  selector: 'disclaimer-dialog',
-  templateUrl: 'disclaimer.html',
-  styleUrls: ['./disclaimer.sass'],
-  standalone: true,
-  imports: [ MatDialogModule, MatButtonModule ]
-})
-export class DialogOverviewExampleDialog {
-  constructor(
-    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {}
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-}
 
 @Component({
   selector: 'app-sankey',
@@ -103,7 +70,7 @@ export class SankeyComponent implements OnInit {
 
   openDialog(): void {
     this.dialog.open(DialogOverviewExampleDialog, {
-      data: {},
+      data: this.data?.disclaimer,
       width: '800px'
     });
   }

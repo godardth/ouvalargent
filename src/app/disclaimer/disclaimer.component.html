@@ -1,0 +1,9 @@
+<div class="disclaimer-container">
+  <h2 class="header">{{ data.header }}</h2>
+  <div mat-dialog-content>
+    <p *ngFor="let p of data?.paragraphs" [innerHTML]="p"></p>
+  </div>
+  <div mat-dialog-actions class="dismiss">
+    <button mat-button (click)="onNoClick()">Accepter</button>
+  </div>
+</div>

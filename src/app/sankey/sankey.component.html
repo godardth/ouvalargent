@@ -46,10 +46,10 @@
                 <div class="section">
                     <h4>Affichage</h4>
                     <div class="input-section slide-toggle">
-                        <mat-slide-toggle [(ngModel)]="displayOptions.showValues" (ngModelChange)="updateChartDrawing()">Afficher les montants</mat-slide-toggle>
+                        <mat-slide-toggle [(ngModel)]="displayOptions.showValues" (ngModelChange)="updateChartDrawing()">Valeurs</mat-slide-toggle>
                     </div>
                     <div class="input-section slide-toggle" *ngIf="displayOptions.showValues">
-                        <mat-slide-toggle [(ngModel)]="displayOptions.asPercent" (ngModelChange)="updateChartDrawing()">En % de la valeur créée</mat-slide-toggle>
+                        <mat-slide-toggle [(ngModel)]="displayOptions.asPercent" (ngModelChange)="updateChartDrawing()">Pourcentage</mat-slide-toggle>
                     </div>
                 </div>
             </div>
