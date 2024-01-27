@@ -1,7 +1,8 @@
 <div class="disclaimer-container">
-  <h2 class="header">{{ data.header }}</h2>
+  <h2 class="header">{{ data.disclaimer?.header }}</h2>
   <div mat-dialog-content>
-    <p *ngFor="let p of data?.paragraphs" [innerHTML]="p"></p>
+    <p *ngFor="let p of data.disclaimer?.paragraphs" [innerHTML]="p"></p>
+    <p>Analysis last update: {{ data.updated | date }}</p>
   </div>
   <div mat-dialog-actions class="dismiss">
     <button mat-button (click)="onNoClick()">Accepter</button>

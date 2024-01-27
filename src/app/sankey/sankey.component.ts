@@ -40,7 +40,7 @@ export class SankeyComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      let file = params['json'] ? params['json'] : 'france';
+      let file = params['json'] ? params['json'] : 'france_tax';
       import(`../../assets/${file}.json`)
         .then(data => {
           this.data = data;
@@ -70,7 +70,7 @@ export class SankeyComponent implements OnInit {
 
   openDialog(): void {
     this.dialog.open(DialogOverviewExampleDialog, {
-      data: this.data?.disclaimer,
+      data: this.data,
       width: '800px'
     });
   }

@@ -5,8 +5,8 @@ import { CommonModule } from '@angular/common';
 
 
 export interface DialogData {
-    header: string;
-    paragraphs: Array<string>;
+    disclaimer: any;
+    updated: string;
 }
   
 @Component({
