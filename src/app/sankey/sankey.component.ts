@@ -190,7 +190,7 @@ export class SankeyComponent implements OnInit {
       .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
     let sankey = Sankey()
       .nodeWidth(10)
-      .nodePadding(20)
+      .nodePadding(30)
       .size([width, height]);
     sankey(this.dataSankey);
     
