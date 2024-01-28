@@ -18,6 +18,7 @@ import { DialogOverviewExampleDialog } from '../disclaimer/disclaimer.component'
 export class SankeyComponent implements OnInit {
 
   data?: any;
+  percent_base: number = 1;
   values: any = {};
   displayOptions = {
     'showValues': true,
@@ -30,7 +31,6 @@ export class SankeyComponent implements OnInit {
   private margin = 100;
   private resizeObserver?: ResizeObserver;
   private dataSankey: SankeyGraph<any, any> = {nodes: [], links: []};
-  private valueCreated: number = 1;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -56,7 +56,7 @@ export class SankeyComponent implements OnInit {
           this.updateChartData();
           this.openDialog();
         })
-        .catch(err => console.log(err.message));
+        .catch(err => console.log(err));
     });
   }
 
@@ -69,10 +69,7 @@ export class SankeyComponent implements OnInit {
   }
 
   openDialog(): void {
-    this.dialog.open(DialogOverviewExampleDialog, {
-      data: this.data,
-      width: '800px'
-    });
+    this.dialog.open(DialogOverviewExampleDialog, { data: this.data, width: '800px' });
   }
 
   sectionSelectionChange(section: any, selected: boolean) {
@@ -90,8 +87,35 @@ export class SankeyComponent implements OnInit {
   updateChartData() {
     if (!this.data) return;
 
+    // References Management
+    let definitions = this.data.definitions;
+    let references = definitions.reduce((res: any, val: any) => { 
+      if (val.ref) res[val.ref] = {'value': 0, 'read': false}; 
+      return res}
+    , {});
+    let getRefValue = function(references: any, definitions: any, title: string) {
+      let ref_name = definitions.find((d: any) => d.title == title)?.ref;
+      return references[ref_name]?.value;
+    }
+    let setRefValue = function(references: any, definitions: any, title: string, value: number) {
+      let old = getRefValue(references, definitions, title);
+      console.log(`INFO: Updating ${title} to ${value} (was ${old})`);
+      if (value == old) return console.log(`INFO: Reference value not updated for ${title}`);
+      let ref_name = definitions.find((d: any) => d.title == title)?.ref;
+      if (!ref_name) return console.log(`WARNING: Reference name not found in the definitions section for ${title}`);
+      if (!references[ref_name]) return console.log(`WARNING: Reference ${ref_name} not found and not updated`);
+      if (references[ref_name].read) console.log(`WARNING: Reference ${ref_name} value is updated after it has been read`);
+      references[ref_name].value = value;
+    }
+    let updateReadRef = function(references: any, formula: string) {
+      let refs = formula.match(/r['[a-zA-Z_-]*']/g)?.map(m => m.slice(3, -2));
+      if (!refs) return;
+      for (let ref of refs) 
+        if (references[ref])
+          references[ref].read = true;
+    }
+
     // Prepare Data
-    let ref: any = {};
     let rows: Array<any> = [];
     let nodes: Array<string> = [];
     this.data.groups.forEach((group: any) => {
@@ -99,24 +123,31 @@ export class SankeyComponent implements OnInit {
       if (!nodes.includes(group.title)) nodes.push(group.title);
       group.breakdown?.forEach((breakdown: any) => {
         if (!nodes.includes(breakdown.title)) nodes.push(breakdown.title);
+        updateReadRef(references, breakdown.formula);
         let f = Function('c,v,r', "return "+breakdown.formula);
         let constants = Object.assign(this.data.constants, group.constants);
-        let value = f(constants, this.values, ref);
+        let value = Math.round(f(constants, this.values, Object.keys(references).reduce((a: any, k: any) => { a[k] = references[k].value; return a; }, {})));
         let color = breakdown.color ? (breakdown.color[0]=='#' ? breakdown.color : this.data.colors[breakdown.color]) : '#00000022';
-        if ("ref" in breakdown) { ref[breakdown.ref as keyof typeof breakdown] = value; }
+        // References
+        if (Object.keys(references).includes(breakdown.ref)) console.log('Warning: subref is equal to main ref !!!');
+        if ("ref" in breakdown) { references[breakdown.ref as keyof typeof breakdown] = {'value': value, 'read': false}; }
         if (value > 0) { 
+          if (!breakdown.formula.includes(`r['${definitions.find((d: any) => d.title == breakdown.title)?.ref}']`))
+            setRefValue(references, definitions, breakdown.title, getRefValue(references, definitions, breakdown.title) + value);
           if (group.direction == 'forward')  rows.push([group.title, breakdown.title, value, color, f]);
           if (group.direction == 'backward') rows.push([breakdown.title, group.title, value, color, f]);
           total += value;
         }
       });
-      if ("ref" in group) ref[group.ref as keyof typeof group] = total;
-      if (group.title == 'Valeur Créée') this.valueCreated = total;
+      // Overwrite the reference value if value is the total of a group
+      let def = this.data.definitions.find((o: any) => o.title == group.title);
+      if (def?.ref) setRefValue(references, definitions, def.title, total);
+      if (def?.percent_base) this.percent_base = total;
     });
     
     // Format Nodes & Links in D3-Sankey format
     let getNodeColor = (title: string) => {
-      let color = this.data.groups.find((g: any) => g.title==title)?.color;
+      let color = this.data.definitions.find((g: any) => g.title==title)?.color;
       return color ? (color[0]=='#' ? color : this.data.colors[color]) : '#000';
     }
     let getNodeValue = (title: string) => {
@@ -215,7 +246,7 @@ export class SankeyComponent implements OnInit {
       let ret = ''
       if (!this.displayOptions.showValues) return '';
       if (!d.total) ret = '-';
-      if (this.displayOptions.asPercent) ret = (Math.round(10 * 100 * d.total / this.valueCreated)/10) + '%';
+      if (this.displayOptions.asPercent) ret = (Math.round(10 * 100 * d.total / this.percent_base)/10) + '%';
       if (!this.displayOptions.asPercent) ret = Math.round(d.total).toLocaleString();
       return (p?' (':'') + ret + (p?')':'')
     };
